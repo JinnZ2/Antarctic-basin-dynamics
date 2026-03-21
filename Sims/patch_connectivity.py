@@ -1,10 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from core import patch_viability
-import json
+import sys
+from pathlib import Path
 
-with open('../parameters.json') as f:
-    P = json.load(f)
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))
+from core import patch_viability, load_parameters
+
+P = load_parameters()
 
 # Body mass range spanning small to megafaunal
 body_masses = np.logspace(1, 5, 200)  # 10kg to 100,000kg
@@ -133,5 +135,7 @@ ax3.set_title('Threshold crossing:\nbaseline vs warming-accelerated')
 ax3.legend()
 
 plt.tight_layout()
-plt.savefig('patch_connectivity_output.png', dpi=150)
+output_dir = Path(__file__).resolve().parent.parent / 'output'
+output_dir.mkdir(exist_ok=True)
+plt.savefig(output_dir / 'patch_connectivity_output.png', dpi=150)
 plt.show()

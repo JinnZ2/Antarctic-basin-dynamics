@@ -1,9 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import sys
+from pathlib import Path
 
-# ── Constants ─────────────────────────────
-PHI = 1.6180339887
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))
+from core import PHI, percolation_decay as _percolation_decay
 
 # ── Shadow basin parameters ──────────────
 class ShadowConfig:
@@ -32,7 +34,7 @@ class ShadowConfig:
 
 # ── Core Functions ────────────────────────
 def percolation_decay(t, config):
-    return 1 / (1 + np.exp(config.k_perc * (t - config.t_c)))
+    return _percolation_decay(t, config.k_perc, config.t_c)
 
 def shadow_growth(t, config):
     growth = config.C_seed * (1 - np.exp(-config.beta_shadow * t))

@@ -1,10 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from core import metabolic_multiplier, trophic_energy_interception
-import json
+import sys
+from pathlib import Path
 
-with open('../parameters.json') as f:
-    P = json.load(f)
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))
+from core import metabolic_multiplier, trophic_energy_interception, load_parameters
+
+P = load_parameters()
 
 warming_range = np.linspace(0, 6, 200)
 
@@ -143,5 +145,7 @@ ax3.set_title('Energy budget over warming trajectory\nwith stochastic prey varia
 ax3.legend(fontsize=7)
 
 plt.tight_layout()
-plt.savefig('trophic_mismatch_output.png', dpi=150)
+output_dir = Path(__file__).resolve().parent.parent / 'output'
+output_dir.mkdir(exist_ok=True)
+plt.savefig(output_dir / 'trophic_mismatch_output.png', dpi=150)
 plt.show()

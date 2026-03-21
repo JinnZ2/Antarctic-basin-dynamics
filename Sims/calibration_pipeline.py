@@ -22,8 +22,11 @@ Leave it better than you found it.
 
 import numpy as np
 import pandas as pd
-import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))
+from core import load_parameters
 
 # ── Data source registry ───────────────────────────────────
 """

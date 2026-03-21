@@ -1,5 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))
+from core import quadratic_warming
 
 # ─── Time setup ─────────────────────────────
 T = 1000
@@ -38,7 +43,7 @@ def run_sim(strategy):
 
     for i in range(1, T):
         t = time[i]
-        temperature = WARM_A * t + WARM_B * t**2
+        temperature = quadratic_warming(t, WARM_A, WARM_B)
         met_mult = Q10 ** (temperature / 10)
 
         slow_energy[i] = network_support[i] ** (alpha * np.log10(slow_mass)) / met_mult - 0.5

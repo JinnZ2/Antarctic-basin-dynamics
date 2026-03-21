@@ -1,10 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-import json
+import sys
+from pathlib import Path
 
-# ── Constants ──────────────────────────────────────────────
-PHI = 1.6180339887
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))
+from core import PHI, percolation_decay as _percolation_decay
 
 # ── Shadow basin parameters ────────────────────────────────
 class ShadowConfig:
@@ -34,7 +35,7 @@ class ShadowConfig:
 # ── Core Functions ─────────────────────────────────────────
 def percolation_decay(t, config):
     """Primary basin: ac(t) - inevitable collapse"""
-    return 1 / (1 + np.exp(config.k_perc * (t - config.t_c)))
+    return _percolation_decay(t, config.k_perc, config.t_c)
 
 def shadow_growth(t, config):
     """Shadow basin: S(t) - phi-scaled animal lattice"""
@@ -57,7 +58,7 @@ def nudge_leverage(t, primary, shadow, config):
 def metabolic_multiplier(t, config):
     """Q10 temperature scaling"""
     temp = config.WARM_A * t + config.WARM_B * t**2
-    return Q10 ** (temp / 10)
+    return config.Q10 ** (temp / 10)
 
 # ── Main Simulation ────────────────────────────────────────
 def run_shadow_basin(config):

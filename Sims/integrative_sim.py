@@ -2,16 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.animation import FuncAnimation
-import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))
 from core import (
     metabolic_multiplier,
     adjusted_lifespan,
     trophic_energy_interception,
-    patch_viability
+    patch_viability,
+    load_parameters,
 )
 
-with open('../Model/parameters.json') as f:
-    P = json.load(f)
+P = load_parameters()
 
 # ── Agent definitions ──────────────────────────────────────
 # Two life-history strategies sharing the same landscape
@@ -330,7 +333,9 @@ fig.suptitle(
     color='white', fontsize=11, y=0.98
 )
 
-plt.savefig('integrative_output.png', dpi=150,
+output_dir = Path(__file__).resolve().parent.parent / 'output'
+output_dir.mkdir(exist_ok=True)
+plt.savefig(output_dir / 'integrative_output.png', dpi=150,
             facecolor=fig.get_facecolor())
 plt.show()
 

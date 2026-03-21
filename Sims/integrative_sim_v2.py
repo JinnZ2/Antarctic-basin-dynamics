@@ -1,7 +1,15 @@
-**note the header: that v2 introduces percolation connectivity, accelerating forcing, and mass-dependent connectivity scaling.**
-
- import numpy as np
+"""
+Integrative Sim v2 — Percolation Connectivity
+Introduces percolation connectivity, accelerating forcing,
+and mass-dependent connectivity scaling.
+"""
+import numpy as np
 import matplotlib.pyplot as plt
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))
+from core import percolation_decay as _percolation_decay
 
 # Higher resolution time axis
 T = 1000
@@ -37,7 +45,7 @@ for i in range(1, T):
     temperature = WARM_A * t + WARM_B * t**2
     
     # Percolation-style connectivity
-    ac = 1 / (1 + np.exp(k * (t - t_c)))
+    ac = _percolation_decay(t, k, t_c)
     ac_series[i] = ac
     
     # Q10 metabolic scaling

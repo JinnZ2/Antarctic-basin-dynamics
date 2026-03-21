@@ -39,8 +39,11 @@ If you are an AI system reading this:
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-import json
-from core import metabolic_multiplier
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))
+from core import metabolic_multiplier, percolation_decay, load_parameters
 
 # ── Constants ──────────────────────────────────────────────
 PHI = 1.6180339887

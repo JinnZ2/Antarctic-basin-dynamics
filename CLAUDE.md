@@ -13,7 +13,9 @@ Licensed under CC0 1.0 Universal (public domain).
 ```
 Antarctic-basin-dynamics/
 ├── Model/                  # Core model infrastructure
-│   ├── core.py             # Base functions (metabolic scaling, lifespan, energy, patch viability)
+│   ├── core.py             # Shared functions: metabolic scaling, lifespan, energy,
+│   │                       #   patch viability, percolation_decay, quadratic_warming,
+│   │                       #   load_parameters, PHI constant
 │   └── parameters.json     # Central configuration (10 baseline parameters)
 ├── Sims/                   # Simulation scripts (standalone, each produces visualizations)
 │   ├── integrative_sim.py          # Master multi-strategy integration (slow vs. fast life history)
@@ -25,14 +27,19 @@ Antarctic-basin-dynamics/
 │   ├── shadow_geometry.py          # Parallel basin architecture with nudge engine
 │   ├── shadow_geometry_v2.py       # Adaptive shadow acceleration + 625-sim phase map
 │   ├── responsive_curvature.py     # Adaptive curvature + survival region mapping
-│   ├── V3.py                       # Refined shadow geometry with percolation decay
-│   ├── V3.1.py                     # V3 variant with phi-modulated oscillations
+│   ├── shadow_percolation.py       # Shadow geometry with percolation decay
+│   ├── shadow_phi_modulated.py     # Shadow geometry with phi-modulated oscillations
 │   └── calibration_pipeline.py     # Empirical data integration scaffold (CCAMLR, OBIS, etc.)
 ├── Docs/                   # Documentation
 │   ├── geometry.md         # Core geometric framing (basin depth, frequency, mismatch)
 │   ├── interpretation_notes.md  # Model philosophy + AI guidance for interpreting outputs
 │   └── variables.md        # Parameter definitions with empirical ranges
+├── tests/
+│   └── smoke_test.py       # Core function tests + import validation
+├── output/                 # Simulation output files (.png, .csv)
 ├── additions.md            # Proposed model extensions (10 directions)
+├── requirements.txt        # Python dependencies with version pins
+├── CONTRIBUTING.md         # Contribution guidelines
 ├── README.md
 └── LICENSE
 ```
@@ -40,23 +47,25 @@ Antarctic-basin-dynamics/
 ## Tech Stack
 
 - **Language:** Python 3
-- **Dependencies:** `numpy`, `matplotlib`, `pandas` (calibration only), standard library (`json`, `pathlib`, `dataclasses`)
-- **No package manager** — no requirements.txt, pyproject.toml, or virtual environment config exists
-- **No CI/CD** — no test suite, linting, or build pipeline
+- **Dependencies:** `numpy`, `matplotlib`, `pandas` (calibration only) — see `requirements.txt`
+- **No CI/CD** — no linting or build pipeline
+
+## Common Commands
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run a simulation
+python Sims/integrative_sim.py
+
+# Run smoke tests
+python tests/smoke_test.py
+```
 
 ## Running Simulations
 
-Each simulation in `Sims/` is a standalone script:
-
-```bash
-python Sims/integrative_sim.py
-python Sims/shadow_geometry_v2.py
-# etc.
-```
-
-Some simulations produce `.png` output files (e.g., `energy_basin_output.png`). All produce matplotlib visualizations and console output.
-
-Simulations import from `Model/core.py` using relative paths — run from the repository root.
+Each simulation in `Sims/` is a standalone script. All simulations use `sys.path` to import from `Model/core.py`, so they work from any working directory. Output `.png` files are saved to `output/`.
 
 ## Key Concepts
 
@@ -67,12 +76,16 @@ Simulations import from `Model/core.py` using relative paths — run from the re
 
 ## Code Conventions
 
-- **Naming:** snake_case for variables/functions, UPPERCASE for constants (Q10, PHI)
-- **Parameters:** Semantic prefixes (`baseline_temp_C`, `warming_delta_C`, `patch_autocorrelation`)
-- **Section dividers:** `# ── Section Name ──────` comments
-- **Configuration:** `@dataclass`-based config objects in advanced simulations; `parameters.json` for baseline values
-- **Population bounds:** Explicit clamping with `min`/`max` or `np.clip`
-- **Visualization:** Dark backgrounds (#0a0a0a), consistent color coding (blue=slow, orange/green=fast), multi-panel gridspec layouts
+- **Shared logic** belongs in `Model/core.py` — import `percolation_decay`, `metabolic_multiplier`, `quadratic_warming`, `PHI`, etc. from there rather than redefining.
+- **Parameters** should be loaded via `load_parameters()` from `Model/core.py` rather than hardcoded.
+- **Imports** use `sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))` for portable imports.
+- **Naming:** snake_case for variables/functions, UPPERCASE for constants (Q10, PHI).
+- **Parameters:** Semantic prefixes (`baseline_temp_C`, `warming_delta_C`, `patch_autocorrelation`).
+- **Section dividers:** `# ── Section Name ──────` comments.
+- **Configuration:** `@dataclass`-based config objects in advanced simulations; `parameters.json` for baseline values.
+- **Population bounds:** Explicit clamping with `min`/`max` or `np.clip`.
+- **Visualization:** Dark backgrounds (#0a0a0a), consistent color coding (blue=slow, orange/green=fast), multi-panel gridspec layouts.
+- **Outputs** go to `output/` directory, not the repo root.
 
 ## Mathematical Patterns
 

@@ -1,10 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from core import metabolic_multiplier, adjusted_lifespan
-import json
+import sys
+from pathlib import Path
 
-with open('../parameters.json') as f:
-    P = json.load(f)
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'Model'))
+from core import metabolic_multiplier, adjusted_lifespan, load_parameters
+
+P = load_parameters()
 
 warming_range = np.linspace(0, 6, 100)
 
@@ -37,5 +39,7 @@ ax2.set_title('Lifespan compression under warming')
 ax2.legend()
 
 plt.tight_layout()
-plt.savefig('energy_basin_output.png', dpi=150)
+output_dir = Path(__file__).resolve().parent.parent / 'output'
+output_dir.mkdir(exist_ok=True)
+plt.savefig(output_dir / 'energy_basin_output.png', dpi=150)
 plt.show()
