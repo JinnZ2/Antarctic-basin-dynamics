@@ -11,10 +11,14 @@ document is what closing them produced, including the
 results that were not expected and the places where adding
 structure made the model *less* certain rather than more.
 
+A fourth followed: ENSO, which gave the model its first
+oscillation and so its first chance to test the claim
+`geometry.md` is built on.
+
 Modules: `Model/spatial.py`, `Model/population.py`,
-`Model/basins.py`.
+`Model/basins.py`, `Model/climate_modes.py`.
 Simulations: `Sims/structural_v4.py`,
-`Sims/forcing_isolation.py`.
+`Sims/forcing_isolation.py`, `Sims/enso_coupling.py`.
 Checks: `tests/test_structure.py`.
 
 ⸻
@@ -362,6 +366,131 @@ That trade is worth making for a geometric model, whose
 purpose is to show what shapes are possible rather than to
 predict values. It would not obviously be worth making for
 a predictive one.
+
+⸻
+
+## 4b. Interannual variability: ENSO
+
+**What replaced what.** Nothing oscillated. Forcing was a
+trend, optionally accelerating. ENSO and SAM now supply the
+high-frequency component (`Model/climate_modes.py`,
+`Sims/enso_coupling.py`, `additions.md` item 10).
+
+### It uses the depth dimension the lattice already had
+
+During El Niño a weaker Amundsen Sea Low weakens coastal
+easterlies, which reduces on-shelf Ekman transport of cold
+surface water and lets warm Circumpolar Deep Water onto the
+shelf. Subsurface warming from 150 m to the shelf bottom
+reaches 0.5 °C. The surface response runs the other way.
+
+The model's baseline is 1.3 °C at 490 m — inside that band.
+So a single El Niño delivers roughly **a quarter of the
+default 2.0 °C `warming_delta_C`** to the exact depth the
+reference organism occupies, and then removes it again.
+
+The sign reversal is the structural point. A model carrying
+one temperature per sector must pick a sign, and either
+choice is wrong for half the water column. The lattice rows
+were depth bands that nothing had used; now they carry a
+profile.
+
+### The assumed sector trends were a standing El Niño
+
+`spatial.py` carried monotone per-sector supply trends with
+grounded signs and invented magnitudes. The Antarctic
+Dipole is what they were imitating: a seesaw in which El
+Niño raises sea ice in the Ross sector and lowers it in the
+Bellingshausen and northern Weddell.
+
+Both patterns were written from the same reported regional
+contrasts, so their agreement is a consistency check and
+not an independent discovery. What the dipole genuinely
+adds is a mechanism, and the sign changes that a monotone
+trend cannot produce.
+
+### The memory claim, tested at last
+
+`geometry.md` asserts that compressing ecological memory
+lets high-frequency environmental variation propagate
+further into the food web. Nothing in the model oscillated,
+so the claim had never been checkable.
+
+Adults integrate every recruitment year between maturity
+and death, which makes them a low-pass filter with a cutoff
+set by that span — and warming shortens the span.
+Driving recruitment with white noise and measuring the
+adult response:
+
+| | Baseline | +6 °C |
+|---|---|---|
+| ENSO-band gain (2–7 yr) | 0.00086 | 0.00149 |
+| Attenuation | 1156× | 669× |
+
+The claim holds — about 73% more ENSO-band variance gets
+through. But the qualitative version omits the scale. A
+73% increase on a thousandfold attenuation is still a
+thousandfold attenuation. The slow integrator does not stop
+being slow; it stops being quite as slow.
+
+The gain spectrum also shows a resonance bump near 200
+years, which is the cohort echo from `structure.md`
+section 2 appearing in a second, independent measurement.
+
+### The basin result is negative, and more useful
+
+A basin integrates forcing over its own relaxation time,
+and ENSO averages to zero over any span longer than a
+decade. Sweeping relaxation time:
+
+| Basin relaxation | Zero-mean ENSO | Persistent El Niño |
+|---|---|---|
+| 0.5 yr | 100% tip | 100% |
+| 2 yr | 0% | 100% |
+| 10 yr | 0% | 88% |
+| 30 yr and slower | 0% | 0% |
+
+Only basins about as fast as ENSO itself can be tipped by
+it. At decadal or centennial relaxation an excursion **more
+than three times the remaining margin** never crosses the
+threshold.
+
+Offsetting toward a persistent El Niño extends the
+vulnerable range roughly tenfold — but that is a shift in
+the *mean*, not the variability, doing the work.
+
+The conclusion is a constraint on which literature matters.
+For slow systems, ENSO variance is irrelevant. What matters
+is anything that shifts ENSO's mean or tail: more frequent
+extreme Eastern Pacific events, or the teleconnection
+weakening from 0.72 to 0.21 after 2002.
+
+It also corrects `interpretation_notes.md`. "Individual bad
+years matter more as the margin narrows" holds for the fast
+stochastic energy balance it was written about. It is false
+for slow basins, which cannot see individual bad years.
+
+### What is still assumed
+
+The ENSO oscillator's damping sets bandwidth and is
+tuned by eye to the 2–7 year description. Sector patterns
+have grounded signs and shaped magnitudes, as before. The
+depth transition at 150 m is empirical but the sharpness of
+the profile is a stand-in for Ekman and bathymetric detail.
+
+Two mappings are invented and both matter: degrees of
+warming per unit basin forcing, and basin model time per
+year. The basin conclusions are conclusions about a
+*ratio*, which is why that ratio is swept rather than
+chosen.
+
+The teleconnection shift is modelled as a step because that
+is how it is reported. The real transition was presumably
+not instantaneous.
+
+Amplitude change under warming defaults to zero. This is
+the honest default: CMIP6 spans both signs with an
+ensemble mean near zero, so the model does not pick one.
 
 ⸻
 

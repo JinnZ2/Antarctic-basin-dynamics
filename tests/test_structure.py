@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / 'Model'))
 
 import basins
+import climate_modes as cm
 import core
 import population as pop
 import spatial as sp
@@ -271,6 +272,140 @@ def test_core_additions_still_reduce_to_prior_behaviour():
                       0.75 ** 0.5)
     assert np.isclose(core.accelerating_temperature(1.3, 10, 0.0075, 0.0),
                       1.3 + 0.075)
+
+
+# --- climate modes --------------------------------------------------
+
+
+def test_enso_index_is_standardised():
+    index = cm.enso_index(5000, np.random.default_rng(9))
+    assert abs(index.std() - 1.0) < 1e-9
+    assert abs(index.mean()) < 0.1
+
+
+def test_enso_peak_falls_in_the_two_to_seven_year_band():
+    """The standard description of ENSO. Not a tuned outcome — the
+    oscillator is specified by period and damping, and this checks
+    the realised spectrum matches the specification."""
+    for seed in range(6):
+        period = cm.spectral_peak(
+            cm.enso_index(2000, np.random.default_rng(seed)))
+        assert 2.0 <= period <= 7.0, (seed, period)
+
+
+def test_enso_is_broadband_not_a_sine():
+    """A pure sinusoid would make the filtering results look sharper
+    than the real forcing warrants."""
+    index = cm.enso_index(4000, np.random.default_rng(11))
+    spectrum = np.abs(np.fft.rfft(index - index.mean())) ** 2
+    spectrum[0] = 0.0
+    # A sine puts essentially all power in one bin.
+    assert spectrum.max() / spectrum.sum() < 0.05
+
+
+def test_depth_response_reverses_sign_at_the_transition():
+    """Surface and subsurface must not share a sign: during El Niño
+    the subsurface warms while the surface goes the other way."""
+    assert cm.depth_weight(20.0) < 0
+    assert cm.depth_weight(490.0) > 0
+    assert abs(cm.depth_weight(cm.SUBSURFACE_DEPTH_M)) < 1e-9
+
+
+def test_model_baseline_depth_sits_in_the_warming_band():
+    """490 m is where the reference organism was observed and where
+    the reported subsurface warming applies."""
+    field = cm.temperature_anomaly(1.0, sp.SECTOR_NAMES, 8)
+    row = int(np.argmin(np.abs(cm.row_depths(8) - 490.0)))
+    peak = field[row, list(sp.SECTOR_NAMES).index('Bellingshausen')]
+    assert peak > 0.9 * cm.ENSO_SUBSURFACE_AMPLITUDE_C, peak
+
+
+def test_dipole_is_a_seesaw():
+    """Ross and Bellingshausen must respond oppositely, or it is not
+    a dipole."""
+    anomaly = cm.habitat_anomaly(1.0, sp.SECTOR_NAMES)
+    ross = anomaly[list(sp.SECTOR_NAMES).index('Ross')]
+    bellingshausen = anomaly[list(sp.SECTOR_NAMES).index('Bellingshausen')]
+    assert ross > 0 and bellingshausen < 0
+
+
+def test_la_nina_reverses_el_nino():
+    assert np.allclose(cm.habitat_anomaly(-1.0, sp.SECTOR_NAMES),
+                       -cm.habitat_anomaly(1.0, sp.SECTOR_NAMES))
+
+
+def test_teleconnection_weakens_after_the_decadal_shift():
+    assert cm.teleconnection_strength(1990) > cm.teleconnection_strength(2015)
+
+
+def test_warming_shortens_the_enso_period():
+    assert cm.warmed_period(6.0) < cm.warmed_period(0.0)
+
+
+def test_amplitude_default_is_no_change():
+    """CMIP6 amplitude projections span both signs with an ensemble
+    mean near zero, so the model must not pick one."""
+    assert cm.warmed_amplitude(6.0) == cm.warmed_amplitude(0.0)
+
+
+# --- memory as a filter ---------------------------------------------
+
+
+def _gain_at(delta_T, forcing):
+    F = pop.calibrate_fecundity()
+    max_age, maturity, bounds = pop.warmed_ages(delta_T, 2.5, decoupling=0.5)
+    A = pop.build_leslie_matrix(F, max_age, maturity, bounds)
+    return pop.recruitment_transfer(A, forcing, maturity_age=maturity)
+
+
+def test_the_slow_integrator_attenuates_enso_heavily():
+    forcing = np.random.default_rng(13).standard_normal(8000)
+    periods, gain = _gain_at(0.0, forcing)
+    enso = pop.band_gain(periods, gain, 2, 7)
+    century = pop.band_gain(periods, gain, 80, 300)
+    assert enso < century / 10, (enso, century)
+
+
+def test_warming_lets_more_high_frequency_variance_through():
+    """geometry.md's central claim, which was untestable until the
+    model contained an oscillation."""
+    forcing = np.random.default_rng(13).standard_normal(8000)
+    cold = pop.band_gain(*_gain_at(0.0, forcing), 2, 7)
+    warm = pop.band_gain(*_gain_at(6.0, forcing), 2, 7)
+    assert warm > cold, (cold, warm)
+
+
+def test_attenuation_remains_large_even_when_degraded():
+    """The claim holds directionally but the effect is a change in a
+    very large number, not a breach of the filter."""
+    forcing = np.random.default_rng(13).standard_normal(8000)
+    warm = pop.band_gain(*_gain_at(6.0, forcing), 2, 7)
+    assert warm < 0.01
+
+
+def test_a_slow_basin_ignores_zero_mean_variability():
+    """A basin integrates over its relaxation time, and ENSO averages
+    to zero across any span longer than a decade."""
+    dt, steps = 0.01, 60000
+    time_per_year = 1.0 / 50.0
+    year_axis = np.arange(steps) * dt / time_per_year
+    mean_forcing = basins.CRITICAL_FORCING * 0.93
+    annual = cm.enso_index(int(year_axis[-1]) + 2, np.random.default_rng(3))
+    forcing = mean_forcing + 0.095 * np.interp(
+        year_axis, np.arange(len(annual)), annual)
+    traj = basins.simulate([basins.COLD_STATE], forcing[:, None], None, dt)
+    assert basins.tipping_steps(traj)[0] == -1
+
+
+def test_a_fast_basin_can_be_tipped_by_variability():
+    dt, steps = 0.01, 60000
+    time_per_year = 1.0 / 0.4
+    year_axis = np.arange(steps) * dt / time_per_year
+    annual = cm.enso_index(int(year_axis[-1]) + 2, np.random.default_rng(3))
+    forcing = basins.CRITICAL_FORCING * 0.93 + 0.095 * np.interp(
+        year_axis, np.arange(len(annual)), annual)
+    traj = basins.simulate([basins.COLD_STATE], forcing[:, None], None, dt)
+    assert basins.tipping_steps(traj)[0] >= 0
 
 
 if __name__ == '__main__':

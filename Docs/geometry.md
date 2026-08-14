@@ -26,6 +26,16 @@ of the system. Compression of the window lets
 high-frequency environmental variation propagate further
 into the food web unchecked.
 
+That claim is now tested rather than asserted. Adults
+integrate every recruitment year between maturity and
+death, making the population a low-pass filter whose
+cutoff warming shortens. ENSO-band variance reaching
+adults rises about 73% between baseline and +6 °C — the
+claim holds. But attenuation is roughly 1150-fold at
+baseline and 670-fold at +6 °C, so the honest statement
+is that the slow integrator does not stop being slow, it
+stops being quite as slow. See `structure.md`.
+
 Lifespan was the original operational definition. It is
 no longer — it is one component of a multi-dimensional
 life-history position, and reading sensitivity to change

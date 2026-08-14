@@ -44,6 +44,15 @@ variation shows that deficit conditions can occur episodically
 before the deterministic crossover — individual bad years
 matter more as the margin narrows.
 
+That last clause holds for this fast stochastic balance and
+**not** for slow basins. A basin integrates forcing over its
+own relaxation time, so interannual variability averages out
+before it can be felt. Driving basins with ENSO shows that
+only basins about as fast as ENSO itself can be tipped by it;
+at decadal or centennial relaxation an excursion three times
+the remaining margin never crosses. Slow systems respond to
+the mean, not to bad years. See `structure.md`.
+
 **Lifespan compression curves** represent theoretical 
 maximum lifespan reduction under rate-of-living assumptions.
 Actual reductions may be smaller due to cold-adaptation

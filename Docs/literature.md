@@ -570,6 +570,142 @@ section 2.
 
 ⸻
 
+## 10. ENSO: the interannual mode, and it is a depth signal
+
+**Finding.**
+The Antarctic Dipole is a seesaw in sea ice between the
+Ross–Amundsen and Bellingshausen–Weddell sectors. During
+austral spring an ENSO-generated Pacific–South American
+wave train shifts and deepens the Amundsen Sea Low,
+producing increased sea ice in the northern Ross Sea and
+decreases in the Bellingshausen and northern Weddell.
+La Niña reverses it
+([*Atmosphere*, 2023](https://doi.org/10.3390/atmos14111659);
+[*Journal of Climate*, 2025](https://journals.ametsoc.org/view/journals/clim/39/1/JCLI-D-24-0190.1.xml)).
+
+The signal reverses sign with depth. During El Niño a
+weaker Amundsen Sea Low weakens coastal easterlies,
+reducing on-shelf Ekman transport of cold surface water
+and admitting warm Circumpolar Deep Water. Subsurface
+warming **between 150 m and the shelf bottom reaches
+0.5 °C**; La Niña produces the opposite, with a stronger
+low, stronger Ekman transport, less cross-shelf CDW and
+subsurface cooling
+([Huguenin et al., *GRL*, 2024](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023GL104518)).
+Thermocline depth variability at the Pine Island and
+Thwaites ice shelf fronts correlates strongly with basal
+melt rates
+([*Nature Communications*, 2024](https://www.nature.com/articles/s41467-024-47084-z)).
+
+The teleconnection is non-stationary. Correlation between
+mature-phase ENSO and the subsequent Antarctic Dipole fell
+from **0.72 over 1979–2001 to 0.21 over 2002–2020**
+([*Atmosphere*, 2023](https://doi.org/10.3390/atmos14111659);
+[*Climate Dynamics*, 2022](https://link.springer.com/article/10.1007/s00382-022-06364-4)),
+with consequences for sea ice predictability
+([*GRL*, 2026](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2026GL123531)).
+
+Under warming, most CMIP6 models project increasing ENSO
+frequency and a shift toward Eastern Pacific events, with
+extreme EP El Niño becoming more likely. Amplitude
+projections span an increase of up to 0.6 °C in standard
+deviation to a decrease of up to 0.4 °C, ensemble mean
+near zero
+([*GRL*, 2025](https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2025GL116541);
+[*npj Climate and Atmospheric Science*, 2022](https://www.nature.com/articles/s41612-022-00324-9);
+[*Nature Climate Change*, 2023](https://www.nature.com/articles/s41558-023-01610-x)).
+
+Krill recruitment and Southern Ocean ecosystem
+fluctuations are linked to both ENSO and the Southern
+Annular Mode
+([*Science Advances*, 2023](https://www.science.org/doi/10.1126/sciadv.adh4584);
+[*Proc. R. Soc. B*, 2007](https://royalsocietypublishing.org/doi/10.1098/rspb.2007.1180)).
+SAM is reported to be in its most positive state in roughly
+a thousand years
+([*Nature Reviews Earth & Environment*, 2025](https://www.nature.com/articles/s43017-025-00746-y)).
+
+**Implication.**
+Three, in ascending order of how much they change the
+model.
+
+The 0.5 °C subsurface amplitude applies to the band from
+150 m to the shelf bottom. The model's baseline is 1.3 °C
+at 490 m. So ENSO delivers **a quarter of the model's
+default 2.0 °C `warming_delta_C`** to the exact depth the
+reference organism occupies, then takes it back.
+
+The sign reverses with depth. A model carrying one
+temperature per sector has to pick a sign, and either
+choice is wrong for the other half of the water column.
+The lattice already had depth rows and nothing had used
+them.
+
+`spatial.py` carried per-sector supply trends that were
+monotone, with grounded signs and invented magnitudes.
+The dipole is what those trends were imitating — one phase
+of an oscillation frozen into a trend. Since both were
+written from the same reported regional contrasts, their
+agreement is a consistency check rather than a discovery;
+what the dipole adds is the mechanism and the sign changes
+a monotone trend cannot produce.
+
+**Change.**
+Added `Model/climate_modes.py`: a noise-driven damped
+oscillator for ENSO with a broad 2–7 year spectral peak
+(not a sine — ENSO has a band, not a frequency), a depth
+profile reversing sign at 150 m, separate sector patterns
+for the ice dipole and the subsurface CDW response, the
+documented decadal weakening of the teleconnection, and
+frequency shift under warming. SAM is included with the
+same machinery and a trend defaulting to zero.
+Amplitude sensitivity defaults to zero because the CMIP6
+sign is genuinely unknown.
+
+Added `population.recruitment_transfer()` and
+`Sims/enso_coupling.py`. Implements `additions.md` item 10.
+
+**Results, including one that corrects an earlier claim.**
+
+`geometry.md` asserts that compressing ecological memory
+lets high-frequency variation propagate further into the
+food web. Nothing in the model oscillated, so this had
+never been tested. It holds: ENSO-band gain into the adult
+population rises about 73% between baseline and +6 °C.
+
+But the qualitative statement omits the magnitude.
+Attenuation at baseline is roughly 1150-fold and at +6 °C
+roughly 670-fold. A 73% increase on a thousandfold
+attenuation is still a thousandfold attenuation. The slow
+integrator does not stop being slow; it stops being quite
+as slow.
+
+The basin result is a flat negative and is the more useful
+one. A basin integrates forcing over its own relaxation
+time, and ENSO averages to zero over any span longer than
+a decade. Sweeping basin relaxation time shows that only
+basins as fast as ENSO itself — a few years — can be
+tipped by it. At decadal-to-centennial relaxation, an
+excursion **more than three times the remaining margin**
+never crosses the threshold.
+
+Offsetting ENSO toward a persistent El Niño extends the
+vulnerable range by about an order of magnitude, but that
+is a shift in the mean doing the work rather than the
+variability.
+
+So the parts of the ENSO literature that matter for slow
+systems are the ones about *changing statistics* — more
+frequent extreme Eastern Pacific events, a weakening
+teleconnection — not the ones about variance.
+
+This corrects `interpretation_notes.md`. "Individual bad
+years matter more as the margin narrows" was written about
+the stochastic energy-balance variant, where it holds. It
+does not hold for slow basins, which cannot see individual
+bad years at all.
+
+⸻
+
 ## Summary of parameter changes
 
 | Parameter | Value | Status | Source |

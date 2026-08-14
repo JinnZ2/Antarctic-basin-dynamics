@@ -48,6 +48,19 @@
   "basin_coupling_strength": 0.06,
   "basin_critical_forcing": 0.3849,
 
+  "enso_period_years": 4.0,
+  "enso_damping": 0.72,
+  "enso_subsurface_amplitude_C": 0.5,
+  "enso_subsurface_depth_m": 150.0,
+  "enso_frequency_sensitivity_per_C": 0.02,
+  "enso_amplitude_sensitivity_per_C": 0.0,
+  "teleconnection_correlation_early": 0.72,
+  "teleconnection_correlation_late": 0.21,
+  "teleconnection_shift_year": 2002,
+  "sam_period_years": 1.6,
+  "sam_trend_per_year": 0.0,
+  "lattice_max_depth_m": 1000.0,
+
   "_heuristic_parameters": [
     "oxygen_mass_sensitivity",
     "connectivity_transition_steepness",
@@ -56,13 +69,19 @@
     "breeding_interval_years",
     "basin_coupling_strength",
     "lattice_rows",
-    "lattice_cols"
+    "lattice_cols",
+    "enso_damping",
+    "enso_frequency_sensitivity_per_C",
+    "sam_period_years",
+    "lattice_max_depth_m"
   ],
   "_derived_parameters": [
     "forcing_acceleration_C_per_year2",
     "basin_critical_forcing"
   ],
   "_off_by_default": [
-    "allee_critical_density"
+    "allee_critical_density",
+    "enso_amplitude_sensitivity_per_C",
+    "sam_trend_per_year"
   ]
 }

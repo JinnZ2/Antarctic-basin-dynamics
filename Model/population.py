@@ -341,6 +341,63 @@ def allee_multiplier(adults, critical_density):
     return float(min(1.0, max(0.0, adults / critical_density)))
 
 
+def recruitment_transfer(A, forcing, maturity_age=MATURITY_AGE,
+                         amplitude=0.1, discard=None):
+    """How much recruitment variance reaches the adult population.
+
+    Drives recruitment multiplicatively with `forcing` and returns
+    (periods, gain), the ratio of the adult-abundance spectrum to
+    the forcing spectrum, period by period.
+
+    This is the test geometry.md's central claim was missing. The
+    claim is that compressing ecological memory lets high-frequency
+    environmental variation propagate further into the food web.
+    Nothing in the model oscillated, so it could not be checked.
+    Adults integrate every recruitment year from maturity to death,
+    which makes them a low-pass filter whose cutoff is set by that
+    span -- and warming shortens the span.
+
+    Adult abundance is taken in logs and linearly detrended. With
+    lambda at exactly 1 and multiplicative forcing, the population
+    is a random walk in log space, so its variance grows without
+    bound and a single variance ratio would be a function of
+    however long the run happened to be. The spectrum is well
+    behaved where the variance is not.
+    """
+    forcing = np.asarray(forcing, dtype=float)
+    steps = len(forcing)
+    discard = maturity_age * 4 if discard is None else int(discard)
+
+    n0 = stable_age_distribution(A) * len(A)
+    supply = 1.0 + amplitude * forcing
+    traj = project(A, n0, steps, supply=supply, maturity_age=maturity_age)
+
+    adults = traj[discard + 1:, maturity_age:].sum(axis=1)
+    driver = forcing[discard:]
+    if len(adults) < 16:
+        raise ValueError('run too short after discarding the transient')
+
+    response = np.log(np.maximum(adults, 1e-300))
+    index = np.arange(len(response), dtype=float)
+    response = response - np.polyval(np.polyfit(index, response, 1), index)
+
+    window = np.hanning(len(response))
+    response_fft = np.abs(np.fft.rfft(response * window))
+    driver_fft = np.abs(np.fft.rfft((driver - driver.mean()) * window))
+    freqs = np.fft.rfftfreq(len(response), d=1.0)
+
+    keep = freqs > 0
+    gain = response_fft[keep] / np.maximum(driver_fft[keep], 1e-12)
+    return 1.0 / freqs[keep], gain
+
+
+def band_gain(periods, gain, low, high):
+    """Mean gain across a band of periods, e.g. the 2-7 year ENSO band."""
+    periods = np.asarray(periods, dtype=float)
+    inside = (periods >= low) & (periods <= high)
+    return float(np.mean(np.asarray(gain)[inside])) if inside.any() else np.nan
+
+
 def project(A, n0, steps, supply=None, critical_density=0.0,
             maturity_age=MATURITY_AGE):
     """Project the population forward, optionally forced.

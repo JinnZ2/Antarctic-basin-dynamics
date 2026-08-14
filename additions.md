@@ -2,7 +2,7 @@ Possible Model Extensions and Structural Additions
 
 This section outlines candidate extensions to increase realism, introduce nonlinear regime shifts, and more explicitly represent spatial geometry in the Antarctic Basin Dynamics framework.
 
-Status lines were added in the August 2026 literature review and updated in the structural update that followed. Eight of the ten items are now implemented, across `Model/core.py`, `Model/spatial.py`, `Model/population.py` and `Model/basins.py`. Evidence is recorded in `Docs/literature.md`; what the structural changes produced, including what got less certain, is in `Docs/structure.md`.
+Status lines were added in the August 2026 literature review and updated in the structural update that followed. Nine of the ten items are now implemented, across `Model/core.py`, `Model/spatial.py`, `Model/population.py`, `Model/basins.py` and `Model/climate_modes.py`. Evidence is recorded in `Docs/literature.md`; what the structural changes produced, including what got less certain, is in `Docs/structure.md`.
 
 ⸻
 
@@ -184,7 +184,7 @@ This captures demand–supply mismatch under warming.
 
 10. Multi-Timescale Forcing
 
-**Status: proposed.** Partly addressed — the long-term trend term is now non-linear (item 6). Seasonal and stochastic components remain absent.
+**Status: implemented.** `Model/climate_modes.py`. ENSO as a noise-driven damped oscillator with a broad 2–7 year peak, plus SAM on the same machinery. Deliberately not a sine — ENSO has a band, not a frequency. Gave the model its first oscillation, which made `geometry.md`'s claim about high-frequency variation propagating into the food web testable for the first time. It holds, at about 73% more ENSO-band variance reaching adults at +6 °C — though the filtering is thousandfold at both ends. Seasonal cycle still absent.
 
 Introduce slow and fast oscillatory components:
 
@@ -231,12 +231,12 @@ If implemented incrementally, each addition can be tested independently to map w
 | 7 | Explicit spatial representation | implemented, without dispersing agents | `spatial.py` |
 | 8 | Forcing isolation experiments | implemented | `Sims/forcing_isolation.py` |
 | 9 | Oxygen limitation coupling | implemented | `core.py` |
-| 10 | Multi-timescale forcing | partly — trend only | `core.py` |
+| 10 | Multi-timescale forcing | implemented, no seasonal cycle | `climate_modes.py` |
 
 Items 1, 2, 6 and 9 default to neutral parameter values that reproduce the model's prior behaviour. Items 4, 5, 7 and 8 are new structure and change what the model can express rather than what it computes by default.
 
 Item 1's sigmoid is superseded rather than removed. `spatial.py` produces the same threshold behaviour from lattice geometry instead of asserting it, and the sigmoid is retained for comparison — the two are plotted against each other in `Sims/structural_v4.py`.
 
-What remains, and it is the same shape in each case: dispersing agents across the lattice (item 7), trophic depth as a dynamic variable (item 3), and seasonal plus stochastic forcing components (item 10). The first and third are work; the second is blocked on the literature not supplying a coefficient.
+What remains: dispersing agents across the lattice (item 7), trophic depth as a dynamic variable (item 3), and a seasonal cycle (item 10). The first and third are work; the second is blocked on the literature not supplying a coefficient.
 
-One honest cost. Closing items 4, 5, 7 and 8 replaced three scalars with roughly twenty parameters, a minority of them grounded. The model represents more and assumes more. `Model/parameters.json` marks the unmeasured ones under `_heuristic_parameters`, and `Docs/structure.md` section 4 sets out the trade.
+One honest cost. Closing items 4, 5, 7, 8 and 10 replaced three scalars with roughly twenty parameters, a minority of them grounded. The model represents more and assumes more. `Model/parameters.json` marks the unmeasured ones under `_heuristic_parameters`, and `Docs/structure.md` section 4 sets out the trade.

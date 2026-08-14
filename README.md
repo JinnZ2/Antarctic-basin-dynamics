@@ -18,6 +18,7 @@ support.
 | `Model/spatial.py` | Circumpolar habitat lattice, percolation |
 | `Model/population.py` | Age-structured demography |
 | `Model/basins.py` | Coupled basins, cascading destabilisation |
+| `Model/climate_modes.py` | ENSO and SAM, depth-resolved teleconnection |
 | `Model/parameters.json` | Parameter values and provenance |
 | `Docs/geometry.md` | Conceptual framing |
 | `Docs/variables.md` | Variable definitions and known weak points |
@@ -60,7 +61,22 @@ Three results worth knowing before reading any output:
   assumed sigmoid, and coupled basins let a sector
   reorganise for reasons absent from its own forcing.
 
-`Docs/structure.md` covers all three, including what
+ENSO was then added, giving the model its first
+oscillation and two more results:
+
+- **The ENSO signal reverses sign with depth**, and the
+  model's 490 m baseline sits inside the band where El Niño
+  warms the shelf by up to 0.5 °C — a quarter of the default
+  total warming, delivered and withdrawn every few years.
+- **Slow basins cannot be tipped by variability.** They
+  integrate over their own relaxation time, and ENSO
+  averages to zero across it. An excursion three times the
+  remaining margin never crosses. Only the *mean* moves a
+  slow basin, which corrects "individual bad years matter
+  more as the margin narrows" — true for the fast stochastic
+  balance it was written about, false here.
+
+`Docs/structure.md` covers all of these, including what
 became *less* certain: roughly twenty parameters now
 stand where three scalars did, and a minority are
 grounded. `parameters.json` marks the rest under
@@ -70,6 +86,7 @@ grounded. `parameters.json` marks the rest under
 
 ```
 python Sims/structural_v4.py       # the three structural layers
+python Sims/enso_coupling.py       # ENSO: depth, dipole, filtering, tipping
 python Sims/forcing_isolation.py   # isolated drivers, interaction surface
 python Sims/lit_update_2026.py     # prior vs revised parameterisation
 python tests/test_structure.py     # checks (also runs under pytest)
