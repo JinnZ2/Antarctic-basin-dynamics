@@ -496,7 +496,10 @@ is not identifiable from the record. No skewness value here
 is calibrated. **Use the model to ask what happens if an
 event of a given size occurs; not how often one will.**
 
-### The record event does not tip anything
+### The record event does not tip a slow basin — but that was the wrong test
+
+*Corrected below. The heading states what the run showed and
+not what it meant.*
 
 At 490 m the 2026-27 event is worth about 1.55 °C —
 roughly **78% of the model's entire default
@@ -524,6 +527,69 @@ slow basin a record amplitude is close to irrelevant; the
 control variable is recurrence. Which is why the ENSO
 projection that matters here is extreme Eastern Pacific
 events becoming **more frequent**, not stronger.
+
+### Events that outlast themselves
+
+Three things were missing from the test above, and together they
+invert its conclusion.
+
+**Persistence was never checked.** The run asked whether the state
+crossed while the pulse lasted, never whether a crossing stays
+crossed. In a bistable system it does — the whole point of the
+geometry — and the check was simply absent.
+
+**The vulnerable basins were the ones not shown.** The same sweep
+already reported that basins of a few years' relaxation cross.
+Antarctic sea ice responds on one to three years. The write-up led
+with the slow half of its own sweep.
+
+**Timescales were never coupled.** Fast and slow basins were only
+ever run separately.
+
+What the observations say: Antarctic sea ice stepped to a new state
+in September 2016 after the 2015-16 super El Niño and has not
+returned — the record lows of 2023, 2024 and 2025 sit inside that
+new state. Super El Niños are reported to raise the probability of
+abrupt, persistent regime shifts enduring years to decades after
+the event fades. The mechanism offered for 2016 is preconditioning
+plus trigger: Winter Water thinning from 2005 to 2015, then
+anomalous winds in 2015 mixing across the thinned layer.
+
+Rerun properly (`Sims/regime_shift.py`):
+
+A two-year pulse on a sea-ice-like basin at 93% of critical takes
+forcing to 0.652, tips it, and the forcing then returns to 0.358 —
+sub-critical — while the state stays at +1.15. **Latched.**
+
+| | Forcing |
+|---|---|
+| Margin that was crossed | 0.027 |
+| Tipping threshold | +0.385 |
+| Recovery threshold | −0.385 |
+| Reversal needed to undo the tip | **0.743 (28×)** |
+
+Restoring the original forcing is not close to enough. Both
+ingredients are needed: below about 85% preconditioning no
+plausible event latches the basin, and at 93% a 3.5σ event does.
+The same event matters enormously or not at all depending on a slow
+variable that has nothing to do with ENSO.
+
+**The timescale bridge.** A latched fast basin applies its coupling
+to slower neighbours *permanently*. The event has zero mean — it
+arrives and leaves. The latch does not. So the slow basin never
+sees a pulse; it sees a step. In the two-basin run a 40-year basin
+that never tips on its own forcing crosses **386 years after** a
+two-year event, by way of a sea-ice-like basin that tipped in year
+109 and stayed tipped.
+
+What survives: zero-mean variability still cannot move a slow basin
+directly, and recurrence rate still sets the mean along that direct
+path. What was wrong was treating the direct path as the only one.
+
+The question to ask is therefore not "is this event large enough to
+move the slow system" — it is not, and no event is — but "what fast
+subsystem is close enough to its threshold to latch, and what is it
+coupled to."
 
 ### The archive, made legible
 

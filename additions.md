@@ -235,6 +235,8 @@ If implemented incrementally, each addition can be tested independently to map w
 
 Items 1, 2, 6 and 9 default to neutral parameter values that reproduce the model's prior behaviour. Items 4, 5, 7 and 8 are new structure and change what the model can express rather than what it computes by default.
 
+Basins now also carry per-basin relaxation rates, hysteresis thresholds and a latching test, added after a record El Niño exposed that persistence had never been checked — see `Docs/literature.md` section 12.
+
 Item 1's sigmoid is superseded rather than removed. `spatial.py` produces the same threshold behaviour from lattice geometry instead of asserting it, and the sigmoid is retained for comparison — the two are plotted against each other in `Sims/structural_v4.py`.
 
 What remains: dispersing agents across the lattice (item 7), trophic depth as a dynamic variable (item 3), and a seasonal cycle (item 10). The first and third are work; the second is blocked on the literature not supplying a coefficient.

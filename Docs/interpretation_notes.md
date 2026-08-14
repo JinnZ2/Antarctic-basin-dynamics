@@ -54,12 +54,26 @@ the remaining margin never crosses. Slow systems respond to
 the mean, not to bad years.
 
 Tested against the strongest El Niño in the instrumental
-record, this holds with room to spare: a 2026-class event
-takes the instantaneous forcing to 169% of critical on a
-basin already at 93%, and everything slower than about three
-years ignores it. What moves a slow basin is how *often*
-such events arrive, not how large they are. See
-`structure.md`.
+record, the direct path holds with room to spare: a
+2026-class event takes instantaneous forcing to 169% of
+critical on a basin already at 93%, and everything slower
+than about three years ignores it.
+
+But direct is not the only path, and reading the above as
+"single events don't matter" would be wrong. A *fast* basin
+— sea ice responds in one to three years — does tip, and
+having tipped it stays tipped: undoing it takes a reversal
+28× the margin that was crossed. A latched fast basin then
+applies its coupling to slow neighbours permanently, turning
+a two-year pulse into a step. In the coupled run a 40-year
+basin that never tips on its own crosses 386 years after the
+event.
+
+So: recurrence rate governs the direct path, and a single
+event suffices for the indirect one. The thing to watch is
+not event size against the slow system, but which fast
+subsystem is near its threshold and what it is coupled to.
+See `structure.md`.
 
 **Lifespan compression curves** represent theoretical 
 maximum lifespan reduction under rate-of-living assumptions.

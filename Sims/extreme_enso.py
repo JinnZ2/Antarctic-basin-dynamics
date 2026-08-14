@@ -17,9 +17,16 @@ This asks four things.
 4. Does the slow integrator record it, and when does the record
    become readable?
 
+CORRECTION: the conclusion below — that a record event tips
+nothing — was measured against slow basins in isolation and never
+checked whether a crossing persists. Both were mistakes. Sea ice
+is a fast basin, it does tip, and it stays tipped. See
+`Sims/regime_shift.py` and Docs/literature.md section 12 before
+using anything here.
+
 Run from anywhere:  python Sims/extreme_enso.py
 
-Literature: Docs/literature.md section 10
+Literature: Docs/literature.md sections 11 and 12
 Caveats: Docs/structure.md
 """
 

@@ -791,6 +791,12 @@ every 18-25 years, exactly where the *time-averaged*
 addition passes the remaining margin, and nowhere near
 where the peak does.
 
+> **Corrected in §12.** The claim that a record event
+> "does not tip anything" was measured against slow basins
+> in isolation and never tested persistence. Both were
+> mistakes. Read §12 before using anything in this
+> paragraph.
+
 So this sharpens §10's conclusion rather than overturning
 it. The relevant ENSO projection for slow systems is the
 one about extreme Eastern Pacific events becoming **more
@@ -809,6 +815,102 @@ archives" means mechanically. The entry is written
 immediately and becomes readable a century and a half
 later. Warming makes it larger and sooner, which is the
 same thing as saying the archive stops being an archive.
+
+⸻
+
+## 12. Events that outlast themselves — a correction
+
+**Finding.**
+Antarctic sea ice stepped to a new state in September 2016,
+following the 2015-16 super El Niño, and did not return.
+The record lows of 2023, 2024 and 2025 sit inside that new
+state rather than being excursions from the old one
+([*Journal of Climate*, 2025](https://doi.org/10.1175/JCLI-D-25-0105.1);
+[*Tellus*, 2022](https://tellusjournal.org/articles/10.16993/tellusa.3222)).
+
+Super El Niño events significantly raise the probability of
+climate regime shifts — abrupt, persistent transitions that
+"endure for years or even decades after the El Niño itself
+has faded," described as climate shocks that push parts of
+the Earth system into new states rather than as passing
+weather. The effect is projected to amplify under warming
+([*Nature Communications* 16:11262, 2025](https://www.nature.com/articles/s41467-025-66143-7)).
+
+The mechanism offered for 2016 is **preconditioning plus
+trigger**: Antarctic Winter Water thinned between 2005 and
+2015, and then anomalously strong winds in 2015 mixed
+across the thinned layer, entraining warm salty subsurface
+water
+([*Nature Climate Change*, 2026](https://www.nature.com/articles/s41558-026-02601-4)).
+Neither ingredient acts alone.
+
+**Implication — this corrects §11.**
+
+§11 reported that a 2026-class event "tips nothing." That
+was wrong in framing, and in three specific ways.
+
+*Persistence was never tested.* The run asked whether the
+state crossed while the pulse lasted. It never asked
+whether a crossing stays crossed. In a bistable system it
+does — that is the entire point of the geometry this model
+is built on, and the check was simply absent.
+
+*The vulnerable basins were the ones not shown.* The same
+sweep already reported that basins of a few years'
+relaxation cross. Antarctic sea ice responds on one to
+three years. The write-up led with the slow half of its own
+sweep.
+
+*Timescales were never coupled.* Fast and slow basins were
+only ever run separately.
+
+**Change.**
+Added `rates` to `basins.simulate()` so basins with
+different relaxation times run together, plus
+`recovery_forcing()`, `hysteresis_width()` and `latched()`.
+Added `Sims/regime_shift.py`.
+
+**Results.**
+
+A two-year pulse on a sea-ice-like basin at 93% of critical
+takes forcing to 0.652, tips it, and then the forcing
+returns to 0.358 — sub-critical — while the state stays at
++1.15. **Latched.**
+
+The asymmetry is the substance. Crossing took a margin of
+**0.027**. Undoing it requires driving forcing to
+−0.385, a reversal of **0.743 — twenty-eight times the
+margin that was crossed.** Restoring the original forcing
+is not close to enough, and never was.
+
+Preconditioning and trigger are both necessary. Below about
+85% of critical, no event in the plausible range latches
+the basin; at 93%, a 3.5σ event does. The same event either
+matters enormously or not at all depending on a slow
+variable that has nothing to do with ENSO.
+
+The timescale bridge is the part §11 missed entirely. A
+fast basin that latches applies its coupling to slower
+neighbours **permanently**. The event has zero mean — it
+arrives and leaves. The latch does not. So the slow basin
+never sees a pulse; it sees a step. In the two-basin run a
+40-year basin that never tips on its own forcing crosses
+**386 years after** a two-year event, by way of a
+sea-ice-like basin that tipped in year 109 and stayed
+tipped.
+
+**What survives from §10 and §11.**
+Zero-mean variability still cannot move a slow basin
+directly, and recurrence rate still sets the mean along
+that direct path. Both stand. What was wrong was treating
+the direct path as the only one. A single event is enough
+for the indirect route, provided something fast, bistable
+and coupled sits in between.
+
+Which reframes what to watch. Not "is this event large
+enough to move the slow system" — it is not, and no event
+is — but "what fast subsystem is close enough to its
+threshold to latch, and what is it coupled to."
 
 ⸻
 

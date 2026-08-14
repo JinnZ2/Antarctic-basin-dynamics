@@ -531,6 +531,133 @@ def test_the_deficit_appears_only_after_maturity():
     assert deviation[trough] < 0
 
 
+# --- persistence and the timescale cascade ---------------------------
+# These encode a correction. An earlier run asked only whether a state
+# crossed while a pulse lasted, never whether a crossing stays
+# crossed, and never coupled a fast basin to a slow one.
+
+
+def _pulse_forcing(relaxation, dt, years, sigma, precondition=0.93,
+                   start_fraction=0.25):
+    steps = int(years / dt)
+    axis = np.arange(steps) * dt
+    pulse = np.interp(axis, np.arange(int(axis[-1]) + 2),
+                      cm.event_pulse(int(axis[-1]) + 2, sigma,
+                                     start_year=int(start_fraction * years)))
+    amplitude = cm.subsurface_anomaly_C(sigma) * 0.19 / sigma
+    return basins.CRITICAL_FORCING * precondition + amplitude * pulse
+
+
+def test_rates_rescale_time_without_moving_the_threshold():
+    """A slower basin takes longer but tips at the same forcing."""
+    steps = 40000
+    forcing = np.full((steps, 1), 0.45)
+    fast = basins.simulate([-1.0], forcing, None, 0.01, rates=1.0)
+    slow = basins.simulate([-1.0], forcing, None, 0.01, rates=0.1)
+    assert fast[-1, 0] > 0 and slow[-1, 0] > 0
+    assert basins.tipping_steps(fast)[0] < basins.tipping_steps(slow)[0]
+
+
+def test_recovery_threshold_is_not_the_tipping_threshold():
+    assert basins.recovery_forcing() == -basins.CRITICAL_FORCING
+    assert basins.hysteresis_width() == 2 * basins.CRITICAL_FORCING
+
+
+def test_a_crossing_outlasts_the_event_that_caused_it():
+    """The check the earlier sim never made.
+
+    A two-year pulse tips a fast basin; the forcing returns to
+    sub-critical and the state does not follow it back.
+    """
+    dt = 0.02
+    forcing = _pulse_forcing(2.0, dt, 400, cm.event_sigma(3.6))
+    traj = basins.simulate([basins.COLD_STATE], forcing[:, None], None, dt,
+                           rates=1.0 / 2.0)
+    assert forcing[-1] < basins.CRITICAL_FORCING       # forcing came back
+    assert traj[-1, 0] > 0                             # the state did not
+    assert bool(basins.latched(traj, forcing[:, None])[0])
+
+
+def test_sea_ice_timescales_are_inside_the_vulnerable_band():
+    """Antarctic sea ice responds on one to three years, which is
+    exactly where a brief event does tip a basin."""
+    dt = 0.02
+    for relaxation in (1.0, 2.0):
+        forcing = _pulse_forcing(relaxation, dt, 400, cm.event_sigma(3.6))
+        traj = basins.simulate([basins.COLD_STATE], forcing[:, None], None,
+                               dt, rates=1.0 / relaxation)
+        assert bool(basins.latched(traj, forcing[:, None])[0]), relaxation
+
+
+def test_preconditioning_and_trigger_are_both_required():
+    """The reported 2016 mechanism: a decade of thinning, then a wind
+    event. Neither ingredient does it alone."""
+    dt = 0.02
+
+    # Trigger without preconditioning.
+    weak = _pulse_forcing(2.0, dt, 200, cm.event_sigma(3.6),
+                          precondition=0.60)
+    traj = basins.simulate([basins.COLD_STATE], weak[:, None], None, dt,
+                           rates=0.5)
+    assert not bool(basins.latched(traj, weak[:, None])[0])
+
+    # Preconditioning without a trigger.
+    steps = int(200 / dt)
+    flat = np.full((steps, 1), basins.CRITICAL_FORCING * 0.93)
+    traj = basins.simulate([basins.COLD_STATE], flat, None, dt, rates=0.5)
+    assert not bool(basins.latched(traj, flat)[0])
+
+    # Both.
+    both = _pulse_forcing(2.0, dt, 200, cm.event_sigma(3.6),
+                          precondition=0.93)
+    traj = basins.simulate([basins.COLD_STATE], both[:, None], None, dt,
+                           rates=0.5)
+    assert bool(basins.latched(traj, both[:, None])[0])
+
+
+def test_a_latched_fast_basin_tips_a_slow_one():
+    """Rectification across timescales.
+
+    A brief event cannot reach a slow basin directly — that earlier
+    finding stands. It reaches it through a fast basin that latches
+    and then applies its coupling permanently, turning a pulse into
+    a step.
+    """
+    dt = 0.02
+    years = 3000
+    steps = int(years / dt)
+    axis = np.arange(steps) * dt
+    sigma = cm.event_sigma(3.6)
+    amplitude = cm.subsurface_anomaly_C(sigma) * 0.19 / sigma
+    pulse = np.interp(axis, np.arange(int(axis[-1]) + 2),
+                      cm.event_pulse(int(axis[-1]) + 2, sigma,
+                                     start_year=100))
+
+    forcing = np.column_stack([
+        basins.CRITICAL_FORCING * 0.93 + amplitude * pulse,
+        np.full(steps, basins.CRITICAL_FORCING * 0.88)])
+    rates = np.array([1 / 2.0, 1 / 40.0])
+    D = np.array([[0.0, 0.0], [0.075, 0.0]])
+
+    coupled = basins.tipping_steps(
+        basins.simulate([-1.0, -1.0], forcing, D, dt, rates=rates))
+    isolated = basins.tipping_steps(
+        basins.simulate([-1.0, -1.0], forcing, None, dt, rates=rates))
+
+    assert isolated[1] == -1          # slow basin holds on its own
+    assert coupled[1] >= 0            # and crosses once the fast one latches
+    assert coupled[1] * dt - 100 > 100  # centuries later
+
+
+def test_the_slow_basin_still_ignores_the_event_directly():
+    """The earlier result, retained. Only the framing was wrong."""
+    dt = 0.02
+    forcing = _pulse_forcing(40.0, dt, 3000, cm.event_sigma(3.6))
+    traj = basins.simulate([basins.COLD_STATE], forcing[:, None], None, dt,
+                           rates=1.0 / 40.0)
+    assert basins.tipping_steps(traj)[0] == -1
+
+
 if __name__ == '__main__':
     tests = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith('test_') and callable(fn)]

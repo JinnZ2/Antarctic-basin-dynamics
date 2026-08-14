@@ -68,16 +68,25 @@ oscillation and two more results:
   model's 490 m baseline sits inside the band where El Niño
   warms the shelf by up to 0.5 °C — a quarter of the default
   total warming, delivered and withdrawn every few years.
-- **Slow basins cannot be tipped by variability.** They
-  integrate over their own relaxation time, and ENSO
-  averages to zero across it. Tested against the record
-  2026-27 event — which takes forcing to 169% of critical on
-  a basin already at 93% — everything slower than three
-  years still holds. What moves a slow basin is how *often*
-  such events arrive, not how large they are. This corrects
-  "individual bad years matter more as the margin narrows":
-  true for the fast stochastic balance it was written about,
-  false here.
+- **Slow basins cannot be tipped by variability *directly*.**
+  They integrate over their own relaxation time, and ENSO
+  averages to zero across it — even the record 2026-27 event,
+  which takes forcing to 169% of critical, leaves a 40-year
+  basin untouched.
+- **But a fast basin latches, and carries the event across.**
+  Sea ice responds in one to three years, does tip, and stays
+  tipped: undoing it takes a reversal **28× the margin that
+  was crossed**. A latched fast basin then applies its
+  coupling permanently, turning a two-year pulse into a step
+  — in the coupled run a 40-year basin crosses **386 years
+  after** the event. Both ingredients are required:
+  preconditioning without a trigger does nothing, and so does
+  a trigger without preconditioning.
+
+  The question is therefore not whether an event is large
+  enough to move the slow system — none is — but which fast
+  subsystem sits near its threshold, and what it is coupled
+  to.
 - **The archive is legible only in arrears.** A record El
   Niño's recruitment failure shows up as a ~1.3% adult
   deficit peaking **153 years later**, because the destroyed
@@ -96,6 +105,7 @@ grounded. `parameters.json` marks the rest under
 python Sims/structural_v4.py       # the three structural layers
 python Sims/enso_coupling.py       # ENSO: depth, dipole, filtering, tipping
 python Sims/extreme_enso.py        # the 2026-27 record event against each layer
+python Sims/regime_shift.py        # persistence, preconditioning, timescale cascade
 python Sims/forcing_isolation.py   # isolated drivers, interaction surface
 python Sims/lit_update_2026.py     # prior vs revised parameterisation
 python tests/test_structure.py     # checks (also runs under pytest)

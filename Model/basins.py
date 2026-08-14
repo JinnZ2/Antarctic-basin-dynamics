@@ -87,19 +87,27 @@ def basin_depth(c, state=COLD_STATE):
     return float(potential(saddle, c) - potential(well, c))
 
 
-def _coupled_drift(x, c, D):
+def _coupled_drift(x, c, D, rates):
     """Rate of change with destabilising coupling."""
     influence = D @ ((x + 1.0) / 2.0)
-    return x - x ** 3 + c + influence
+    return rates * (x - x ** 3 + c + influence)
 
 
-def simulate(x0, forcing, D=None, dt=0.01):
+def simulate(x0, forcing, D=None, dt=0.01, rates=None):
     """Integrate the coupled system with RK4.
 
     `forcing` is an (n_steps, n_basins) array of c values.
     `D` is the coupling matrix; D[i, j] is the push basin j
     exerts on basin i once j has tipped. The diagonal is
     ignored.
+
+    `rates` scales each basin's response speed, so basins with
+    different relaxation times can be run together. This is not
+    cosmetic: a sea-ice basin responds in a year or two while an
+    ice-sheet or ecosystem basin takes decades, and whether a
+    brief event matters depends entirely on which one it hits.
+    Rescaling time leaves the equilibria and the saddle-node
+    untouched.
 
     Returns trajectories of shape (n_steps, n_basins).
     """
@@ -108,20 +116,51 @@ def simulate(x0, forcing, D=None, dt=0.01):
 
     D = np.zeros((n_basins, n_basins)) if D is None else np.array(D, float)
     np.fill_diagonal(D, 0.0)
+    rates = (np.ones(n_basins) if rates is None
+             else np.broadcast_to(np.asarray(rates, dtype=float),
+                                  (n_basins,)))
 
     x = np.asarray(x0, dtype=float).copy()
     out = np.empty((n_steps, n_basins))
 
     for k in range(n_steps):
         c = forcing[k]
-        k1 = _coupled_drift(x, c, D)
-        k2 = _coupled_drift(x + 0.5 * dt * k1, c, D)
-        k3 = _coupled_drift(x + 0.5 * dt * k2, c, D)
-        k4 = _coupled_drift(x + dt * k3, c, D)
+        k1 = _coupled_drift(x, c, D, rates)
+        k2 = _coupled_drift(x + 0.5 * dt * k1, c, D, rates)
+        k3 = _coupled_drift(x + 0.5 * dt * k2, c, D, rates)
+        k4 = _coupled_drift(x + dt * k3, c, D, rates)
         x = x + (dt / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
         out[k] = x
 
     return out
+
+
+def recovery_forcing(state=TIPPED_STATE):
+    """Forcing required to undo a tip.
+
+    Having crossed at +CRITICAL_FORCING, the upper state does
+    not disappear until forcing falls to -CRITICAL_FORCING. The
+    two are not the same number, and the gap between them is
+    why a transition that took a brief excursion to trigger can
+    take a sustained reversal to undo.
+    """
+    return -CRITICAL_FORCING if state > 0 else CRITICAL_FORCING
+
+
+def hysteresis_width():
+    """Separation between the tipping and recovery thresholds."""
+    return 2.0 * CRITICAL_FORCING
+
+
+def latched(trajectories, forcing, threshold=0.0):
+    """Basins left in the upper state while forcing is sub-critical.
+
+    The operational test for a transition that outlasts its
+    trigger: the forcing has come back and the state has not.
+    """
+    traj = np.atleast_2d(trajectories)
+    forcing = np.atleast_2d(np.asarray(forcing, dtype=float))
+    return (traj[-1] > threshold) & (forcing[-1] < CRITICAL_FORCING)
 
 
 def tipping_steps(trajectories, threshold=0.0):
