@@ -31,12 +31,38 @@
 
   "longevity_maintenance_decoupling": 0.5,
 
+  "maturity_age_years": 150,
+  "max_age_years": 300,
+  "stage_age_bounds": [0, 15, 75, 150],
+  "stage_annual_survival": [0.85, 0.95, 0.98, 0.99],
+  "pups_per_pregnancy": 262,
+  "breeding_interval_years": 10,
+  "female_fraction": 0.5,
+  "allee_critical_density": 0.0,
+
+  "lattice_rows": 8,
+  "lattice_cols": 60,
+  "n_sectors": 6,
+  "initial_bond_probability": 0.95,
+
+  "basin_coupling_strength": 0.06,
+  "basin_critical_forcing": 0.3849,
+
   "_heuristic_parameters": [
     "oxygen_mass_sensitivity",
     "connectivity_transition_steepness",
-    "longevity_maintenance_decoupling"
+    "longevity_maintenance_decoupling",
+    "stage_annual_survival",
+    "breeding_interval_years",
+    "basin_coupling_strength",
+    "lattice_rows",
+    "lattice_cols"
   ],
   "_derived_parameters": [
-    "forcing_acceleration_C_per_year2"
+    "forcing_acceleration_C_per_year2",
+    "basin_critical_forcing"
+  ],
+  "_off_by_default": [
+    "allee_critical_density"
   ]
 }

@@ -14,38 +14,71 @@ support.
 
 | Path | Contents |
 |---|---|
-| `Model/core.py` | Model functions |
+| `Model/core.py` | Model primitives |
+| `Model/spatial.py` | Circumpolar habitat lattice, percolation |
+| `Model/population.py` | Age-structured demography |
+| `Model/basins.py` | Coupled basins, cascading destabilisation |
 | `Model/parameters.json` | Parameter values and provenance |
 | `Docs/geometry.md` | Conceptual framing |
 | `Docs/variables.md` | Variable definitions and known weak points |
 | `Docs/interpretation_notes.md` | How to read the outputs |
 | `Docs/literature.md` | Empirical basis and revision history |
+| `Docs/structure.md` | What the structural layers changed |
 | `additions.md` | Candidate extensions, with implementation status |
 | `Sims/` | Simulation scripts |
+| `tests/` | Checks against analytic values |
 
-## Literature status
+## Where the model stands
 
-Last reviewed **August 2026**. Every parameter's
-source, and every change deliberately *not* made, is
-recorded in `Docs/literature.md`.
+Reviewed against the literature in **August 2026**;
+structural layers added immediately after. Every
+parameter's source, and every change deliberately
+*not* made, is in `Docs/literature.md`.
 
-The most recent review made trophic transfer
-efficiency dynamic under warming, added an oxygen
-constraint, added an accelerating forcing option and
-a percolation-style connectivity transition, and
-weakened the rate-of-living assumption on lifespan
-compression. Each addition defaults to a neutral
-value that reproduces the model's prior behaviour, so
-existing simulations are unaffected until a mechanism
-is engaged deliberately.
+The literature review made trophic transfer efficiency
+dynamic under warming, added an oxygen constraint and
+an accelerating forcing option, and weakened the
+rate-of-living assumption on lifespan. Those additions
+each default to a neutral value reproducing the model's
+prior behaviour.
 
-Four parameters are flagged as heuristic or derived
-rather than measured. They are listed under
-`_heuristic_parameters` and `_derived_parameters` in
-`parameters.json`. Sweep them; do not trust them.
+The structural update then replaced three scalars with
+structure — space, age, and the basin itself. Eight of
+the ten items in `additions.md` are now implemented.
+Three results worth knowing before reading any output:
 
-`python Sims/lit_update_2026.py` plots the prior
-parameterisation against the revised one.
+- **Ecological memory is not lifespan.** The damping
+  timescale from the projection matrix is ~498 years
+  against a 300-year lifespan, and perturbations ring
+  at roughly the generation time rather than simply
+  decaying.
+- **Warming costs memory before viability.** Taken
+  alone, age compression slightly *raises* population
+  growth rate while memory falls by a third.
+- **Thresholds are emergent and plural.** Connectivity
+  collapse comes out of lattice geometry rather than an
+  assumed sigmoid, and coupled basins let a sector
+  reorganise for reasons absent from its own forcing.
+
+`Docs/structure.md` covers all three, including what
+became *less* certain: roughly twenty parameters now
+stand where three scalars did, and a minority are
+grounded. `parameters.json` marks the rest under
+`_heuristic_parameters`. Sweep them; do not trust them.
+
+## Running
+
+```
+python Sims/structural_v4.py       # the three structural layers
+python Sims/forcing_isolation.py   # isolated drivers, interaction surface
+python Sims/lit_update_2026.py     # prior vs revised parameterisation
+python tests/test_structure.py     # checks (also runs under pytest)
+```
+
+Checks are against analytic values where they exist:
+square-lattice bond percolation at 0.5, the saddle-node
+of dx/dt = x − x³ + c at 2/(3√3), the potential barrier
+at zero forcing of exactly 0.25.
 
 ## Requirements
 

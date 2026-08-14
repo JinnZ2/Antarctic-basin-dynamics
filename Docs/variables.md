@@ -222,31 +222,143 @@ assumption. Heuristic.
 
 ⸻
 
+# Parameters added in the structural update
+
+Full rationale and results: `structure.md`.
+
+## Demography (`Model/population.py`)
+
+**maturity_age_years**
+Age of first reproduction. Default 150.
+Empirical: 156 ± 22 years.
+
+**max_age_years**
+Working maximum lifespan. Default 300.
+Empirical: 392 ± 120 years reported; 300 is the
+conservative working value carried from
+`baseline_lifespan_years`.
+
+**pups_per_pregnancy**
+Default 262, the midpoint of an empirical 200–324
+range that varies with maternal size.
+
+**breeding_interval_years**
+Years between pregnancies. Default 10.
+Not known for this species. Placeholder.
+
+**stage_age_bounds**
+Age boundaries of the four reporting stages:
+[0, 15, 75, 150]. Only the 150 boundary is empirical;
+the internal splits are a reporting convenience.
+
+**stage_annual_survival**
+Annual survival within each stage:
+[0.85, 0.95, 0.98, 0.99].
+No survival schedule exists for an animal that matures
+at 150 years. This is the standard shape for a large
+slow elasmobranch. Heuristic, and the input the
+demographic results are most sensitive to.
+
+**allee_critical_density**
+Adult density below which recruitment is penalised.
+Default 0.0, meaning **off**.
+Evidence in elasmobranchs is mixed: detection of Allee
+effects in marine fishes carries known analytical
+biases, some depleted shark populations recovered
+faster than demographic models predicted, and
+mating-system variation appears unlikely to be a major
+determinant of extinction vulnerability. Turning it on
+states a hypothesis rather than correcting an error.
+
+Note: assembled from the empirical values above
+without tuning, the schedule gives an annual growth
+rate of 0.9995 — within 0.05% of replacement. A weak
+consistency check, not a validation, since survival is
+the unmeasured input.
+
+## Spatial lattice (`Model/spatial.py`)
+
+**lattice_rows**, **lattice_cols**
+Habitat lattice dimensions, default 8 × 60. Rows are
+depth or latitude bands; columns are longitude and
+wrap. Threshold values depend on these. Heuristic.
+
+**n_sectors**
+Circumpolar sectors, default 6: Weddell, Indian, West
+Pacific, Ross, Amundsen, Bellingshausen.
+
+**initial_bond_probability**
+Starting habitat continuity, default 0.95.
+
+Per-sector supply and fragmentation rates live in
+`spatial.py` rather than here, because the *signs* are
+grounded in observed regional contrasts while the
+*magnitudes* are illustrative. Keeping them in code
+with that caveat attached is more honest than listing
+them as parameters.
+
+## Coupled basins (`Model/basins.py`)
+
+**basin_coupling_strength**
+Destabilising push a tipped basin exerts on each
+neighbour. Default 0.06.
+The literature supports the sign — most interactions
+between tipping elements are destabilising — not the
+magnitude. Heuristic. Sweep it.
+
+**basin_critical_forcing**
+Saddle-node of dx/dt = x − x³ + c, at 2/(3√3) ≈ 0.3849.
+Analytic. Listed for reference and used as the check
+value in `tests/test_structure.py`; the code computes
+it rather than reading it.
+
+⸻
+
 # Known weak points in these definitions
 
-**Ecological memory as lifespan.**
-`geometry.md` operationalises ecological memory as
-the lifespan of dominant long-lived species. The
-buffering mechanism is sound — overlapping
-generations damp short-term variation — but recent
-work cautions explicitly against reading sensitivity
-to environmental change off life-history position,
-and against treating the fast–slow continuum as a
-single axis. Lifespan is one component of a
-multi-dimensional position. Treat the shortcut as
-operational, not definitional.
-
 **Sea ice as habitat continuity.**
-`patch_autocorrelation` is anchored partly on sea ice
+`patch_autocorrelation` and the lattice bond
+probability are anchored partly on sea ice
 observations, but ice extent is a proxy for habitat
 continuity, not a measurement of it. The mapping from
 ice state to effective connectivity for a deep-water
-species is assumed.
+species is assumed. Adding a lattice did not fix this
+— it gave the assumption more structure to be wrong
+in.
 
-**Circumpolar scalars.**
-Mid-trophic supply is a single number. Antarctic krill
-are declining in the Atlantic–Bellingshausen sector
-while increasing in the Ross–Pacific sector. A scalar
-averages those into a small net change and reports
-stability where the actual signal is spatial
-reorganisation.
+**Model time in the basin layer.**
+The double-well formulation is normalised. Model time
+is not years, and the mapping from a normalised basin
+to a physical sector is qualitative throughout.
+
+**Parameter count.**
+The structural update replaced three scalars with
+roughly twenty parameters, of which a minority are
+grounded. `parameters.json` marks the rest under
+`_heuristic_parameters`. The model now represents
+behaviours it previously could not, and makes more
+assumptions to do so.
+
+⸻
+
+# Superseded
+
+**Ecological memory as lifespan.**
+Was the operational definition in `geometry.md`. The
+buffering mechanism is sound — overlapping generations
+damp short-term variation — but lifespan is one
+component of a multi-dimensional life-history
+position, and recent work cautions against reading
+sensitivity to environmental change off that position.
+
+Replaced by three quantities from the projection
+matrix: damping timescale (498 yr at baseline),
+generation time (206 yr), and transient period
+(209 yr). Against a lifespan of 300 yr. They do not
+track each other under warming.
+
+**Circumpolar scalars for mid-trophic supply.**
+Replaced by per-sector supply with a
+`redistribution_index()` diagnostic. On the default
+trends the circumpolar mean reports a 13% decline
+while sectors move up to 72% in opposing directions.

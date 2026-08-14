@@ -447,11 +447,20 @@ scalar rate. `additions.md` item 4 (Allee effects)
 touches this but does not solve it.
 
 **Change.**
-`[proposed]` — no parameter change. Recorded as the
-main structural gap. Adding stage structure is a
-larger change than this update should make, and
-faking it with a scalar would be worse than leaving
-the gap visible.
+Originally recorded as `[proposed]` — the main
+structural gap, too large for that update to make.
+
+**Closed.** `Model/spatial.py` replaces the scalar
+with a circumpolar lattice partitioned into six
+sectors, and `Model/population.py` replaces scalar
+abundance with an age-classed projection matrix.
+Sector trend signs are grounded; magnitudes are not.
+See `structure.md` sections 1 and 2.
+
+The redistribution diagnostic confirms the concern
+quantitatively: on the default trends the circumpolar
+mean reports a 13% decline while sectors move up to
+72% in opposing directions.
 
 ⸻
 
@@ -498,9 +507,19 @@ The 1–2 °C figure also sits inside the model's
 a conservative choice.
 
 **Change.**
-`[proposed]` — no code change. Recorded as the
-highest-value structural extension, and a companion
-to `additions.md` item 7.
+Originally recorded as `[proposed]` — the
+highest-value structural extension.
+
+**Closed.** `Model/basins.py` implements several
+coupled double-well potentials with destabilising
+interactions, checked against the analytic saddle-node
+at 2/(3√3). On the default configuration one sector
+crosses its own threshold and two more follow.
+
+The coupling *sign* is what the literature supports.
+The magnitude is invented — `ring_coupling()` is a
+placeholder for a matrix nobody has measured. See
+`structure.md` section 3.
 
 ⸻
 
@@ -533,10 +552,21 @@ literature is explicit that the single-axis reading
 misleads.
 
 **Change.**
-Documentation only. `geometry.md` and
-`variables.md` now flag the shortcut as an
-operational simplification with a known failure mode,
-rather than presenting it as the definition.
+Originally documentation only — `geometry.md` and
+`variables.md` flagged the shortcut as an operational
+simplification with a known failure mode.
+
+**Closed.** The age-classed matrix in
+`Model/population.py` supplies measures that do not
+depend on reading sensitivity off a single
+life-history axis: generation time (206 yr), the
+damping timescale (498 yr), and the period of the
+transient oscillation (209 yr).
+
+The lifespan proxy understated the integration window
+by about 66%, and the three quantities do not track
+each other under warming. See `structure.md`
+section 2.
 
 ⸻
 
@@ -577,19 +607,25 @@ they stay identifiable at a glance. Sweep them.
 
 ## Still not represented
 
-Unchanged from `interpretation_notes.md`, and worth
-restating because this update did not fix them:
-
-- Behavioural adaptation and range shift
+- Behavioural adaptation and range shift. The spatial
+  layer has patches but no agents dispersing between
+  them.
 - Evolutionary response on centennial timescales
-- Stage- and age-structured populations (§7)
-- Multiple coupled basins and cascading tipping (§8)
-- Explicit spatial geometry (`additions.md` item 7)
+- Two-way coupling between layers — supply flows
+  spatial → demographic → basin, but a reorganised
+  basin does not feed back into habitat structure
+- Dynamic trophic depth (`additions.md` item 3,
+  second half)
 - Ice–albedo and methane feedbacks; the warming
   trajectory is still externally imposed
 
 The oxygen constraint and dynamic transfer efficiency
-have moved off this list. The rest have not.
+moved off this list in the August 2026 review. Age
+structure (§7), spatial geometry (§7) and coupled
+basins (§8) followed in the structural update — see
+`structure.md`, including what got *less* certain as a
+result. Three scalars became roughly twenty
+parameters, a minority of them grounded.
 
 ⸻
 
