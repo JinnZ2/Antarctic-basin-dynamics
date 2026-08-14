@@ -26,10 +26,20 @@ of the system. Operationally: the lifespan of dominant
 long-lived species. Compression of lifespan compresses 
 the integration window. High-frequency environmental 
 variation propagates further into the food web unchecked.
+The operational definition is a simplification with a
+known failure mode — lifespan is one component of a
+multi-dimensional life-history position, and reading
+sensitivity to change off that position alone can
+mislead. The mechanism holds; the shortcut is a
+shortcut. See `variables.md`.
 
 **Spatial autocorrelation** determines effective landscape 
 continuity for large-bodied species. Below connectivity 
 thresholds, fragmentation costs compound nonlinearly.
+Recent Antarctic sea ice behaviour — four decades in
+range, then a step to a new state that persisted —
+suggests this is better represented as a threshold
+crossing than as smooth decay.
 
 These are not independent variables. They interact.
 Temperature forcing affects basin depth, system frequency, 
