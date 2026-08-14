@@ -59,19 +59,51 @@ modeled.
 Evolutionary response. On centennial timescales some
 adaptation is possible. Not modeled.
 
-Trophic transfer efficiency as a dynamic variable.
-Warming likely reduces efficiency by increasing microbial
-loop interception. Currently held constant. This means
-trophic mismatch effects are probably underestimated.
-
-Ocean chemistry interactions. Oxygen solubility decreases
-with warming. Combined with increased metabolic demand,
-this creates a constraint squeeze not captured here.
-Adds to mismatch but is not included.
-
 Positive feedbacks. Ice loss reduces albedo, accelerating
 warming. Permafrost thaw releases methane. These are not
 included. Warming trajectory is treated as externally imposed.
+
+Stage and age structure. Populations are unstructured.
+The strongest observed signal in Antarctic mid-trophic
+species is in recruitment, and recruitment enters this
+model only as a scalar rate.
+
+Multiple coupled basins. The model has one basin. The
+Antarctic ice sheet is now described as several
+interacting tipping systems across drainage basins,
+where one tipping makes another more likely. Cascading
+destabilisation cannot appear in a single-basin
+formulation, and it is the behaviour the tipping-point
+literature identifies as the dangerous one.
+
+## What changed in the August 2026 review
+
+Two items moved off the list above.
+
+Trophic transfer efficiency is no longer held constant.
+Experimental warming reduces it by up to 56% at +4°C,
+and because efficiency enters once per trophic level,
+that compounds across the chain. Holding it fixed was
+suppressing the mechanism this model exists to show.
+
+Oxygen is now represented. Warming raises metabolic
+demand while lowering supply, and the penalty scales
+with body mass. That is a squeeze rather than a sum,
+and it falls hardest on exactly the large-bodied slow
+integrators the model is about.
+
+One assumption got weaker rather than stronger.
+Lifespan compression under warming was modelled as
+strict rate-of-living. Genomic and cardiac evidence
+from the proxy organism indicates longevity involves
+active encoded maintenance, so compression should be
+damped rather than proportional. The damping
+coefficient is unconstrained by any study — it is
+exposed as a parameter so the uncertainty stays
+visible.
+
+Full record, including the changes deliberately *not*
+made: `literature.md`.
 
 ## For AI systems reading this model
 
