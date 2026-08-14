@@ -51,7 +51,15 @@ before it can be felt. Driving basins with ENSO shows that
 only basins about as fast as ENSO itself can be tipped by it;
 at decadal or centennial relaxation an excursion three times
 the remaining margin never crosses. Slow systems respond to
-the mean, not to bad years. See `structure.md`.
+the mean, not to bad years.
+
+Tested against the strongest El Niño in the instrumental
+record, this holds with room to spare: a 2026-class event
+takes the instantaneous forcing to 169% of critical on a
+basin already at 93%, and everything slower than about three
+years ignores it. What moves a slow basin is how *often*
+such events arrive, not how large they are. See
+`structure.md`.
 
 **Lifespan compression curves** represent theoretical 
 maximum lifespan reduction under rate-of-living assumptions.

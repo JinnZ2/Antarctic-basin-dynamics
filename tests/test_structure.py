@@ -408,6 +408,129 @@ def test_a_fast_basin_can_be_tipped_by_variability():
     assert basins.tipping_steps(traj)[0] >= 0
 
 
+# --- extreme events -------------------------------------------------
+
+
+def test_event_sigma_conversion():
+    """1877-78 and 2015-16 both land near 3.5 sigma."""
+    assert 3.4 < cm.event_sigma(2.73) < 3.6
+    assert 3.4 < cm.event_sigma(2.75) < 3.6
+    assert cm.event_sigma(3.6) > 4.5
+
+
+def test_rectification_produces_positive_skew():
+    plain = cm.enso_index(200000, np.random.default_rng(21), skewness=0.0)
+    skewed = cm.enso_index(200000, np.random.default_rng(21),
+                           skewness=cm.ENSO_SKEWNESS)
+
+    def skew(x):
+        return float(((x - x.mean()) ** 3).mean() / x.std() ** 3)
+
+    assert abs(skew(plain)) < 0.1
+    assert skew(skewed) > 0.2
+
+
+def test_rectification_preserves_unit_variance():
+    for strength in (0.0, 0.08, 0.6):
+        index = cm.enso_index(50000, np.random.default_rng(22),
+                              skewness=strength)
+        assert abs(index.std() - 1.0) < 1e-9
+
+
+def test_skewness_defaults_off_so_earlier_results_are_unchanged():
+    a = cm.enso_index(500, np.random.default_rng(23))
+    b = cm.enso_index(500, np.random.default_rng(23), skewness=0.0)
+    assert np.allclose(a, b)
+
+
+def test_symmetric_generator_cannot_produce_a_record_event():
+    """The defect the 2026-27 forecast exposed.
+
+    A symmetric generator assigns an event that is currently
+    happening a return period beyond any useful horizon.
+    """
+    period = cm.return_period(cm.event_sigma(3.6), skewness=0.0,
+                              n_years=200000,
+                              rng=np.random.default_rng(24))
+    assert period > 100000 or not np.isfinite(period)
+
+
+def test_skew_shortens_the_return_period():
+    sigma = cm.event_sigma(2.73)
+    plain = cm.return_period(sigma, skewness=0.0, n_years=300000,
+                             rng=np.random.default_rng(25))
+    skewed = cm.return_period(sigma, skewness=0.6, n_years=300000,
+                              rng=np.random.default_rng(25))
+    assert skewed < plain
+
+
+def test_event_pulse_peaks_at_the_requested_size():
+    pulse = cm.event_pulse(100, 4.65, start_year=40)
+    assert abs(pulse.max() - 4.65) < 1e-9
+    assert int(np.argmax(pulse)) == 40
+    assert pulse[0] < 1e-6
+
+
+def test_event_pulse_decays_slower_than_it_rises():
+    """Extreme events are projected to show faster onset, slower decay."""
+    pulse = cm.event_pulse(100, 1.0, onset_years=1.0, decay_years=1.5,
+                           start_year=50)
+    assert pulse[53] > pulse[47]
+
+
+def test_record_event_is_a_large_fraction_of_total_warming():
+    """The reason a single event matters at all: at 490 m it is
+    comparable to the model's whole projected warming."""
+    degrees = cm.subsurface_anomaly_C(cm.event_sigma(3.6))
+    assert 0.6 < degrees / 2.0 < 1.0
+
+
+def test_a_record_pulse_does_not_tip_a_slow_basin():
+    """The central negative result, at the largest event on record.
+
+    The pulse takes instantaneous forcing well past critical. A
+    basin with a decadal relaxation time still holds, because it
+    integrates rather than tracks.
+    """
+    dt, relaxation = 0.01, 30.0
+    time_per_year = 1.0 / relaxation
+    steps = int(400 * time_per_year / dt)
+    year_axis = np.arange(steps) * dt / time_per_year
+
+    sigma = cm.event_sigma(3.6)
+    forcing_amplitude = cm.subsurface_anomaly_C(sigma) * 0.19
+    pulse = cm.event_pulse(int(year_axis[-1]) + 2, sigma,
+                           start_year=int(year_axis[-1] * 0.5))
+    forcing = basins.CRITICAL_FORCING * 0.93 + (
+        forcing_amplitude / sigma) * np.interp(
+            year_axis, np.arange(len(pulse)), pulse)
+
+    assert forcing.max() > basins.CRITICAL_FORCING      # overshoots
+    traj = basins.simulate([basins.COLD_STATE], forcing[:, None], None, dt)
+    assert basins.tipping_steps(traj)[0] == -1          # and holds anyway
+
+
+def test_the_deficit_appears_only_after_maturity():
+    """A destroyed cohort cannot be counted among adults until it
+    would have matured."""
+    F = pop.calibrate_fecundity()
+    A = pop.build_leslie_matrix(F)
+    start = pop.stable_age_distribution(A) * 1000
+    horizon, event_year = 1200, 400
+
+    pulse = cm.event_pulse(horizon, cm.event_sigma(3.6),
+                           start_year=event_year)
+    supply = np.clip(1.0 - 0.10 * pulse, 0.0, None)
+    forced = pop.project(A, start, horizon, supply=supply)[:, pop.MATURITY_AGE:].sum(axis=1)
+    control = pop.project(A, start, horizon)[:, pop.MATURITY_AGE:].sum(axis=1)
+    deviation = forced / control - 1.0
+
+    assert abs(deviation[event_year + 50]) < 1e-6      # nothing yet
+    trough = int(np.argmin(deviation))
+    assert trough - event_year > pop.MATURITY_AGE      # only after maturity
+    assert deviation[trough] < 0
+
+
 if __name__ == '__main__':
     tests = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith('test_') and callable(fn)]

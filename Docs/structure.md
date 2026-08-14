@@ -470,6 +470,83 @@ years matter more as the margin narrows" holds for the fast
 stochastic energy balance it was written about. It is false
 for slow basins, which cannot see individual bad years.
 
+### A record event exposed a defect
+
+The 2026-27 El Niño is forecast to peak near 3.6 °C in
+Niño 3.4 — about 1 °C above the previous 149-year record,
+where 1877-78 and 2015-16 sit in a dead heat at 2.73 and
+2.75 °C. In σ (Niño 3.4 σ = 0.775 °C) that is 4.65 against
+3.52 and 3.55.
+
+The generator was Gaussian. Across **a million simulated
+years it never produced a 4.65σ event**. The model was
+assigning a probability indistinguishable from zero to
+something currently happening.
+
+Quadratic rectification now supplies positive skew — the
+shape dynamical nonlinearity actually produces, rather than
+an arbitrary skewing transform. It defaults off so earlier
+results are unchanged.
+
+The fix is partial and must be described that way. Matching
+the observed rate of ~3.5σ events needs more skew than
+Niño 3.4 displays. With two events in 149 years the Poisson
+interval on the rate spans a factor of thirty, so the tail
+is not identifiable from the record. No skewness value here
+is calibrated. **Use the model to ask what happens if an
+event of a given size occurs; not how often one will.**
+
+### The record event does not tip anything
+
+At 490 m the 2026-27 event is worth about 1.55 °C —
+roughly **78% of the model's entire default
+`warming_delta_C`** — delivered over two years and
+withdrawn. In forcing units the pulse takes a basin already
+at 93% of critical to **169% of critical**.
+
+Every basin with a relaxation time beyond about three years
+holds.
+
+| Between 2026-class events | Time-averaged addition | Outcome |
+|---|---|---|
+| 200 yr | 0.0035 | holds |
+| 50 yr | 0.0130 | holds |
+| 25 yr | 0.0261 | holds |
+| 18 yr | 0.0360 | **tips** |
+| 6 yr | 0.1072 | **tips** |
+
+The remaining margin is 0.0269. The crossover sits exactly
+where the time-averaged addition passes it, and nowhere
+near where the peak does.
+
+This sharpens section 4b rather than overturning it. For a
+slow basin a record amplitude is close to irrelevant; the
+control variable is recurrence. Which is why the ENSO
+projection that matters here is extreme Eastern Pacific
+events becoming **more frequent**, not stronger.
+
+### The archive, made legible
+
+A 46% recruitment failure from a 2026-class event produces:
+
+| | Adult deficit | Peaks after |
+|---|---|---|
+| Baseline | −1.29% | 153 yr |
+| +3 °C | −1.71% | 134 yr |
+| +6 °C | −2.20% | 117 yr |
+
+The strongest El Niño in the instrumental record removes
+about one percent of the adult population, and the deficit
+does not appear for a century and a half — the destroyed
+cohort has to reach maturity before its absence can be
+counted.
+
+That is what "long-lived species act as biological
+archives" means mechanically. The entry is written
+immediately and becomes readable much later. Warming makes
+it larger and sooner, which is the same thing as saying the
+archive stops being an archive.
+
 ### What is still assumed
 
 The ENSO oscillator's damping sets bandwidth and is
@@ -491,6 +568,19 @@ not instantaneous.
 Amplitude change under warming defaults to zero. This is
 the honest default: CMIP6 spans both signs with an
 ensemble mean near zero, so the model does not pick one.
+
+Event magnitudes at depth scale linearly from the composite
+response, which almost certainly saturates — the mechanism
+is Ekman transport shutting down, and once suppressed it
+cannot suppress further. Treat large-σ figures as upper
+bounds.
+
+One unresolved caveat: the reported 2.73 / 2.75 / 3.6
+values may come from a relative Niño 3.4 index detrended
+against tropical mean warming, while the 0.775 °C standard
+deviation is for the conventional index. If so the σ
+conversions are slightly off. This could not be verified
+from the available sources.
 
 ⸻
 

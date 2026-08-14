@@ -51,6 +51,41 @@ import numpy as np
 ENSO_PERIOD_YEARS = 4.0
 ENSO_DAMPING = 0.72
 
+# Observed standard deviation of the Nino3.4 index, used to convert
+# reported event magnitudes in degrees into sigma.
+NINO34_SD_C = 0.775
+
+# Reported peak Nino3.4 anomalies, in degrees. The 1877-78 and
+# 2015-16 values are a statistical dead heat and sit well within the
+# uncertainty of nineteenth-century ship data, so the ranking
+# between them means little. The 2026-27 figure is a forecast, not
+# an observation: the consensus peak is ~3.6 C with the middle 80%
+# of the ensemble at or above the previous record and the low end of
+# the plume at 2.8 C.
+HISTORICAL_EVENTS = {
+    '1877-78': 2.73,
+    '2015-16': 2.75,
+    '2026-27 (forecast)': 3.6,
+    '2026-27 (plume low)': 2.8,
+}
+
+# Quadratic rectification strength. ENSO is positively skewed with a
+# one-sided fat tail produced by extreme El Nino events, attributed
+# to dynamical nonlinearity -- nonlinear zonal advection in
+# particular. Nino3.4 shows only slight positive skew, less than
+# Nino3.
+#
+# The default reproduces that mild observed skew. It does NOT
+# reproduce the observed rate of extreme events, and no value of it
+# reliably could: see `return_period()`.
+ENSO_SKEWNESS = 0.08
+
+# Strength of the composite El Nino to which the 0.5 C subsurface
+# figure corresponds. Composites are dominated by ordinary events,
+# so this is taken as a moderate one. It is an assumption, and every
+# scaled event magnitude below is proportional to it.
+COMPOSITE_EVENT_SIGMA = 1.5
+
 # Peak subsurface warming on the West Antarctic shelf during El
 # Nino, between 150 m and the shelf bottom. Empirical.
 ENSO_SUBSURFACE_AMPLITUDE_C = 0.5
@@ -140,15 +175,38 @@ def _damped_oscillator(n, period, damping, rng, burn_in=200):
     return x / spread if spread > 0 else x
 
 
+def _rectify(x, strength):
+    """Quadratic rectification, renormalised to unit variance.
+
+    y = x + a(x^2 - 1) introduces positive skew while leaving the
+    mean at zero. Chosen over an arbitrary skewing transform
+    because it is the shape dynamical nonlinearity actually
+    produces -- nonlinear zonal advection rectifies the anomaly
+    quadratically, which is the standard explanation for ENSO's
+    one-sided fat tail.
+    """
+    if strength == 0:
+        return x
+    y = x + strength * (x ** 2 - 1.0)
+    spread = y.std()
+    return y / spread if spread > 0 else y
+
+
 def enso_index(n_years, rng=None, period=ENSO_PERIOD_YEARS,
-               damping=ENSO_DAMPING):
+               damping=ENSO_DAMPING, skewness=0.0):
     """Standardised ENSO index, one value per year.
 
     Positive is El Nino. Unit variance by construction, so
     amplitude is applied downstream rather than being baked in.
+
+    `skewness` defaults to 0 so existing results are unchanged.
+    Pass ENSO_SKEWNESS for the mildly skewed observed shape, or a
+    larger value to fatten the tail deliberately -- but read
+    `return_period()` before treating any value as calibrated.
     """
     rng = np.random.default_rng(0) if rng is None else rng
-    return _damped_oscillator(n_years, period, damping, rng)
+    base = _damped_oscillator(n_years, period, damping, rng)
+    return _rectify(base, skewness)
 
 
 def sam_index(n_years, rng=None, period=SAM_PERIOD_YEARS,
@@ -286,6 +344,82 @@ def warmed_amplitude(delta_T, base_amplitude=ENSO_SUBSURFACE_AMPLITUDE_C,
     in the variance. This function does not represent that.
     """
     return base_amplitude * (1.0 + amplitude_sensitivity * float(delta_T))
+
+
+def event_sigma(nino34_anomaly_C, sd=NINO34_SD_C):
+    """Convert a reported Nino3.4 anomaly in degrees into sigma."""
+    return np.asarray(nino34_anomaly_C, dtype=float) / sd
+
+
+def subsurface_anomaly_C(sigma, amplitude=ENSO_SUBSURFACE_AMPLITUDE_C,
+                         composite_sigma=COMPOSITE_EVENT_SIGMA):
+    """Antarctic subsurface warming for an event of a given size.
+
+    Scales the measured composite response linearly in event
+    magnitude. Two caveats, both material:
+
+    The composite strength it is scaled from is assumed, not
+    reported, so every number out of this is proportional to a
+    guess.
+
+    Linearity almost certainly fails at the top. The mechanism is
+    Ekman transport shutting down and letting Circumpolar Deep
+    Water onto the shelf, and once the on-shelf transport is fully
+    suppressed a stronger event cannot suppress it further. Real
+    response should saturate. This function does not, so it is an
+    upper bound at large sigma.
+    """
+    return amplitude * np.asarray(sigma, dtype=float) / composite_sigma
+
+
+def return_period(sigma, skewness=0.0, n_years=2_000_000, rng=None,
+                  period=ENSO_PERIOD_YEARS, damping=ENSO_DAMPING):
+    """Modelled years between events at or above `sigma`.
+
+    Read this as a diagnostic of the generator, not as a statement
+    about the world.
+
+    With 149 years of record containing perhaps two events near
+    3.5 sigma, the empirical rate has a Poisson 95% interval
+    spanning roughly one event per 20 years to one per 600. The
+    tail is not identifiable from the data, so no skewness value
+    here is calibrated -- it can only be shown to be more or less
+    absurd.
+
+    What the function is good for is exposing when a generator is
+    assigning a return period to an event that is currently
+    happening.
+    """
+    rng = np.random.default_rng(7) if rng is None else rng
+    series = enso_index(int(n_years), rng, period, damping, skewness)
+    sigma = np.atleast_1d(np.asarray(sigma, dtype=float))
+
+    counts = np.array([(series >= s).sum() for s in sigma], dtype=float)
+    with np.errstate(divide='ignore'):
+        periods = np.where(counts > 0, n_years / np.maximum(counts, 1e-12),
+                           np.inf)
+    return periods[0] if periods.size == 1 else periods
+
+
+def event_pulse(n_years, peak_sigma, onset_years=1.0, decay_years=1.5,
+                start_year=None):
+    """A single named event as a forcing pulse, in sigma.
+
+    Extreme El Nino events are projected to show faster onset and
+    slower decay than the historical average, so onset and decay
+    are separate arguments rather than one width. The default 1
+    year up and 1.5 years down is a reasonable shape for a strong
+    event and is not fitted to any particular one.
+    """
+    n_years = int(n_years)
+    start_year = n_years // 3 if start_year is None else int(start_year)
+    t = np.arange(n_years, dtype=float) - start_year
+
+    pulse = np.where(
+        t < 0,
+        np.exp(-(t / max(onset_years, 1e-9)) ** 2),
+        np.exp(-(t / max(decay_years, 1e-9)) ** 2))
+    return peak_sigma * pulse
 
 
 def spectral_peak(series, dt=1.0):

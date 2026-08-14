@@ -375,6 +375,44 @@ positive state in roughly a thousand years — but the trend
 in index units per year is a modelling choice, so it
 defaults to off.
 
+**nino34_sd_C**
+Standard deviation of the Niño 3.4 index. Default
+0.775 °C. Used to convert reported event magnitudes in
+degrees into σ. Empirical.
+
+**nino34_peak_1877_78_C / _2015_16_C / _2026_27_forecast_C**
+2.73, 2.75 and 3.6 °C — 3.52σ, 3.55σ and 4.65σ.
+The first two are a statistical dead heat well inside the
+uncertainty of nineteenth-century ship data, so the ranking
+between them means little. The third is a forecast, not an
+observation.
+Caveat: these may come from a *relative* Niño 3.4 index
+detrended against tropical mean warming, while the standard
+deviation above is for the conventional index. If so the σ
+conversions are slightly off. Not verifiable from the
+available sources.
+
+**enso_skewness**
+Quadratic rectification strength. Default 0.08, which
+reproduces the mild positive skew Niño 3.4 shows.
+Defaults **off** in `enso_index()` so earlier results are
+unchanged; pass it explicitly.
+It does not reproduce the observed *rate* of extreme
+events, and no value reliably could — two events in 149
+years leaves a Poisson interval on the rate spanning a
+factor of thirty. The tail is not identifiable. Heuristic,
+and unusually so.
+
+**composite_event_sigma**
+Strength of the composite El Niño that the 0.5 °C
+subsurface figure is taken to represent. Default 1.5.
+Assumed, not reported — and every scaled event magnitude
+is proportional to it. Heuristic.
+Scaling is also linear, which almost certainly fails at
+large σ: the mechanism is Ekman transport shutting down,
+and once suppressed it cannot suppress further. Large-event
+figures are upper bounds.
+
 Sector patterns for the ice dipole and the subsurface CDW
 response live in `climate_modes.py` rather than here, for
 the same reason as the spatial trends: signs grounded,

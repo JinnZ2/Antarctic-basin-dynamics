@@ -70,11 +70,19 @@ oscillation and two more results:
   total warming, delivered and withdrawn every few years.
 - **Slow basins cannot be tipped by variability.** They
   integrate over their own relaxation time, and ENSO
-  averages to zero across it. An excursion three times the
-  remaining margin never crosses. Only the *mean* moves a
-  slow basin, which corrects "individual bad years matter
-  more as the margin narrows" — true for the fast stochastic
-  balance it was written about, false here.
+  averages to zero across it. Tested against the record
+  2026-27 event — which takes forcing to 169% of critical on
+  a basin already at 93% — everything slower than three
+  years still holds. What moves a slow basin is how *often*
+  such events arrive, not how large they are. This corrects
+  "individual bad years matter more as the margin narrows":
+  true for the fast stochastic balance it was written about,
+  false here.
+- **The archive is legible only in arrears.** A record El
+  Niño's recruitment failure shows up as a ~1.3% adult
+  deficit peaking **153 years later**, because the destroyed
+  cohort must reach maturity before its absence can be
+  counted. Warming makes the entry larger and sooner.
 
 `Docs/structure.md` covers all of these, including what
 became *less* certain: roughly twenty parameters now
@@ -87,6 +95,7 @@ grounded. `parameters.json` marks the rest under
 ```
 python Sims/structural_v4.py       # the three structural layers
 python Sims/enso_coupling.py       # ENSO: depth, dipole, filtering, tipping
+python Sims/extreme_enso.py        # the 2026-27 record event against each layer
 python Sims/forcing_isolation.py   # isolated drivers, interaction surface
 python Sims/lit_update_2026.py     # prior vs revised parameterisation
 python tests/test_structure.py     # checks (also runs under pytest)

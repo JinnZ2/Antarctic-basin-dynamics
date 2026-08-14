@@ -704,6 +704,114 @@ the stochastic energy-balance variant, where it holds. It
 does not hold for slow basins, which cannot see individual
 bad years at all.
 
+## 11. The 2026-27 event, and a defect it exposed
+
+**Finding.**
+The 2026-27 El Niño is forecast to peak near **3.6 °C** in
+Niño 3.4, roughly **1 °C above the previous 149-year
+record**. The middle 80% of the forecast ensemble sits at
+or above that record and even the low end of the plume,
+2.8 °C, grazes it
+([Yale Climate Connections, 2026](https://yaleclimateconnections.org/2026/07/this-could-be-the-strongest-el-nino-on-record/);
+[Hausfather, *The Climate Brink*](https://www.theclimatebrink.com/p/the-strongest-el-nino-ever);
+[Carbon Brief](https://www.carbonbrief.org/state-of-the-climate-strong-el-nino-puts-2026-on-track-for-second-warmest-year)).
+
+The previous record holders are 1877-78 at 2.73 °C and
+2015-16 at 2.75 °C — a statistical dead heat well inside
+the uncertainty of nineteenth-century ship data, so the
+ranking between those two carries little information
+([Washington Post, 2026](https://www.washingtonpost.com/weather/2026/05/12/super-el-nino-1877-population-impacts/)).
+The 1877-78 event is the one associated with the Great
+Drought and famines across India, China and Brazil.
+
+Niño 3.4 has a standard deviation of **0.775 °C**
+([*Int. J. Climatology*, 2022](https://rmets.onlinelibrary.wiley.com/doi/10.1002/joc.7535)).
+ENSO is positively skewed with a one-sided fat tail
+produced by extreme El Niño events, attributed to
+dynamical nonlinearity and nonlinear zonal advection in
+particular; Niño 3 shows this strongly and Niño 3.4 only
+slightly
+([*Climate Data Guide*](https://climatedataguide.ucar.edu/climate-data/asymmetry-and-diversity-pattern-amplitude-and-duration-el-ni%25C3%25B1o-and-la-ni%25C3%25B1a);
+[*npj Climate and Atmospheric Science*, 2022](https://www.nature.com/articles/s41612-022-00241-x)).
+
+**Implication.**
+In σ: 1877-78 is 3.52, 2015-16 is 3.55, and the 2026-27
+forecast is **4.65**.
+
+The generator added in §10 is Gaussian. Across a million
+simulated years it **never produced a 4.65σ event**. The
+model was assigning a probability indistinguishable from
+zero to something that is currently happening. That is a
+defect, and it was only visible because a record event
+turned up to expose it.
+
+**Change.**
+Added quadratic rectification to `enso_index()` — the
+shape dynamical nonlinearity actually produces, rather
+than an arbitrary skewing transform — plus
+`event_sigma()`, `subsurface_anomaly_C()`,
+`return_period()` and `event_pulse()`. Skewness defaults
+to 0 so earlier results are unchanged. Added
+`Sims/extreme_enso.py`.
+
+The fix is partial and should be described that way.
+Matching the observed rate of ~3.5σ events needs more skew
+than Niño 3.4 displays. With two events in 149 years the
+Poisson interval on the rate spans a factor of thirty, so
+the tail is simply not identifiable. **No skewness value
+here is calibrated.** Use the model to ask what happens
+*if* an event of a given size occurs; do not use it to ask
+how often one will.
+
+One unresolved caveat: the 2.73 / 2.75 / 3.6 figures may
+come from a relative Niño 3.4 index, detrended against
+tropical mean warming, while the 0.775 °C standard
+deviation is for the conventional index. If so the σ
+conversions above are slightly off. This could not be
+verified from the available sources.
+
+**Results.**
+
+At 490 m the 2026-27 event is worth about **1.55 °C** —
+roughly **78% of the model's entire default
+`warming_delta_C` of 2.0 °C**, delivered over about two
+years and then withdrawn. (Scaled linearly from the
+composite response, which almost certainly saturates at
+large σ, so read it as an upper bound.)
+
+Yet it does not tip anything. The pulse takes
+instantaneous forcing to **169% of critical** on a basin
+already sitting at 93% of it, and every basin with a
+relaxation time beyond about three years holds. Not
+because the event is small — because it is brief.
+
+What does tip a slow basin is recurrence. For a 30-year
+basin the crossover sits at roughly one 2026-class event
+every 18-25 years, exactly where the *time-averaged*
+addition passes the remaining margin, and nowhere near
+where the peak does.
+
+So this sharpens §10's conclusion rather than overturning
+it. The relevant ENSO projection for slow systems is the
+one about extreme Eastern Pacific events becoming **more
+frequent** — not about their becoming stronger. A record
+amplitude is, for a slow basin, almost irrelevant.
+
+The demographic layer gives the most legible result in the
+repo. A 46% recruitment failure from a 2026-class event
+produces an adult deficit of about **1.3%**, peaking
+**153 years after the event** — the destroyed cohort has
+to reach maturity before its absence can be counted. Under
++6 °C the deficit grows to 2.2% and arrives at 117 years.
+
+That is what "long-lived species act as biological
+archives" means mechanically. The entry is written
+immediately and becomes readable a century and a half
+later. Warming makes it larger and sooner, which is the
+same thing as saying the archive stops being an archive.
+
+⸻
+
 ⸻
 
 ## Summary of parameter changes
