@@ -914,6 +914,150 @@ threshold to latch, and what is it coupled to."
 
 ⸻
 
+## 13. Committed is not collapsed
+
+**Finding.**
+Conditions that initiate West Antarctic collapse can be
+reached within decades and may already have been reached —
+around **40% of West Antarctic ice may already be committed
+to long-term loss** at present warming — while the
+resulting sea-level rise unfolds over **centuries to
+millennia**. Crossing a threshold is not collapsing
+([*The Cryosphere* 18:4463, 2024](https://tc.copernicus.org/articles/18/4463/2024/);
+[Carbon Brief guest post](https://www.carbonbrief.org/guest-post-how-close-is-the-west-antarctic-ice-sheet-to-a-tipping-point);
+[*Communications Earth & Environment*, 2025](https://www.nature.com/articles/s43247-025-02366-2)).
+
+One modelling study places irreversible WAIS collapse at
+ocean warming between 0 and 0.25 °C above present, which
+would mean the threshold is already behind us
+([*PNAS*, 2015](https://www.pnas.org/doi/10.1073/pnas.1512482112);
+[*Nature Climate Change*, 2023](https://www.nature.com/articles/s41558-023-01818-x)).
+A 2026 study sequences critical thresholds across Antarctic
+ice basins
+([phys.org, 2026](https://phys.org/news/2026-02-sequence-critical-thresholds-antarctic-ice.html)).
+
+Critical slowing down — rising variance, rising
+autocorrelation, lengthening recovery — is the standard
+early-warning family, and has been applied to Pine Island
+Glacier and to Larsen C
+([arXiv, 2020](https://arxiv.org/pdf/2004.09724)).
+
+**Implication.**
+"Near collapse any day now" contains two claims with
+opposite implications, and the model separates them by rate
+constant alone.
+
+There is also a conflation worth naming explicitly: **sea
+ice and ice sheets are different objects**. Sea ice is
+frozen ocean that can visibly reorganise in a season, and
+did in 2016. An ice sheet is kilometres of land ice with a
+response time three orders of magnitude longer. Public
+discussion moves between them freely; the model cannot,
+because they are different basins with different rate
+constants.
+
+**Change.**
+Added `recovery_rate()`, `relaxation_time()`,
+`commitment_lag()`, `rolling_variance()` and
+`rolling_autocorrelation()` to `Model/basins.py`, plus
+`Sims/commitment.py`.
+
+**Results.**
+
+One forcing ramp, one threshold crossing, three rate
+constants:
+
+| Basin | Relaxation | Visible transition after |
+|---|---|---|
+| Sea ice | 2 yr | 57 yr |
+| Ice shelf | 30 yr | 330 yr |
+| Ice sheet | 1000 yr | 2,891 yr |
+
+A century after the same moment of commitment, sea ice has
+completed its transition, the shelf has moved 19% and the
+sheet 7%. Someone watching the ice sheet sees a slow trend.
+
+**Commitment is invisible by construction.** The stable
+state drifts smoothly from −1 to −0.577 as forcing
+approaches the threshold — 21% of the full transition —
+and then stops moving until it jumps. That drift reads as
+an ordinary trend, not as an approaching cliff.
+
+What does carry the information is the recovery rate, which
+falls to **exactly zero** at the saddle-node. At 99.9% of
+threshold a basin takes 38 times longer to recover from a
+perturbation than an undisturbed one, while its mean state
+has barely moved since 90%.
+
+Measured at fixed forcing with ENSO-scale noise, variance
+rises about elevenfold between 40% and 99.5% of threshold
+and lag-1 autocorrelation goes 0.956 → 0.996, matching the
+analytic exp(−λ) to three decimals. These are not
+forecasts — they say a basin is losing resilience, not when
+it will go — but during the gap between commitment and
+transition they are the only signal available.
+
+**Two methodological notes, recorded because both nearly
+went the other way.**
+
+The first early-warning implementation detrended a ramped
+run with a moving average the same width as the measurement
+window, and returned indicators that *fell* as the
+threshold approached. The filter was removing exactly the
+variability being measured. Measuring at fixed forcing,
+where the analytic prediction is available as a check,
+fixed it. An early-warning indicator that disagrees with
+theory is usually the analyst, not the system.
+
+The first reversibility sweep let the forcing ramp keep
+rising during the delay, so a basin waiting ten of its own
+relaxation times had also accumulated ten times more
+overshoot — geometry confounded with ramp rate. The second
+held overshoot fixed but swept only to six relaxation
+times, at which point the window had not closed, and
+reported the sweep bound as though it were the answer. Both
+are the same error in different clothing: reporting the
+edge of the experiment as a property of the system.
+
+**Reversibility.** With overshoot held fixed the three
+basins are the same system up to a rescaling of time, so
+the window is one number in relaxation times and three
+numbers in years. It is set by how far past the threshold
+the forcing went, because escape near a saddle-node slows
+as the overshoot shrinks:
+
+| Overshoot | Window (relaxation times) |
+|---|---|
+| 1% | 33.3 |
+| 10% | 7.6 |
+| 80% | 1.3 |
+
+At a 10% overshoot that is 15 years for sea ice, 229 for an
+ice shelf, and **7,640 for an ice sheet**. The slow basin
+looks generous.
+
+That generosity is the trap. Through those centuries the
+state has barely moved, so nothing in the observational
+record says the window is open or that it is closing. By
+the time the transition is visible the window shut long
+ago, and recovery then requires driving forcing to the far
+side of zero rather than merely undoing the overshoot.
+
+**Conclusion.**
+For ice sheets, "any day now" is wrong: the transition
+takes centuries to millennia once begun, and the model
+reproduces that from the rate constant alone. For sea ice
+it is not wrong, and 2016 already happened. Conflating the
+two makes the claim sound either hysterical or dismissible
+depending on which object the reader has in mind.
+
+Neither reading is reassuring, because the quantity that
+matters is not when a transition completes but whether the
+commitment is already made — and commitment is invisible by
+construction in exactly the systems where it lasts longest.
+
+⸻
+
 ⸻
 
 ## Summary of parameter changes

@@ -87,6 +87,13 @@ oscillation and two more results:
   enough to move the slow system — none is — but which fast
   subsystem sits near its threshold, and what it is coupled
   to.
+- **Committed is not collapsed, and commitment is invisible.**
+  The same crossing becomes visible after 57 years in sea ice,
+  330 in an ice shelf and 2,891 in an ice sheet. Before it, the
+  state drifts only 21% and looks like an ordinary trend —
+  while the recovery rate falls to zero, variance rises tenfold
+  and autocorrelation goes 0.953 → 0.995. Those statistics are
+  the only signal available during the gap.
 - **The archive is legible only in arrears.** A record El
   Niño's recruitment failure shows up as a ~1.3% adult
   deficit peaking **153 years later**, because the destroyed
@@ -106,6 +113,7 @@ python Sims/structural_v4.py       # the three structural layers
 python Sims/enso_coupling.py       # ENSO: depth, dipole, filtering, tipping
 python Sims/extreme_enso.py        # the 2026-27 record event against each layer
 python Sims/regime_shift.py        # persistence, preconditioning, timescale cascade
+python Sims/commitment.py          # committed vs collapsed, early warning
 python Sims/forcing_isolation.py   # isolated drivers, interaction surface
 python Sims/lit_update_2026.py     # prior vs revised parameterisation
 python tests/test_structure.py     # checks (also runs under pytest)

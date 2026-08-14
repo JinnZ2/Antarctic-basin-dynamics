@@ -658,6 +658,120 @@ def test_the_slow_basin_still_ignores_the_event_directly():
     assert basins.tipping_steps(traj)[0] == -1
 
 
+# --- commitment, slowing down, reversibility -------------------------
+
+
+def test_recovery_rate_matches_the_analytic_endpoints():
+    """2 at zero forcing, exactly 0 at the saddle-node."""
+    assert abs(basins.recovery_rate(0.0) - 2.0) < 1e-9
+    assert basins.recovery_rate(basins.CRITICAL_FORCING) == 0.0
+
+
+def test_recovery_rate_falls_monotonically_toward_the_threshold():
+    rates = [basins.recovery_rate(basins.CRITICAL_FORCING * f)
+             for f in (0.0, 0.5, 0.9, 0.99, 0.999)]
+    assert all(np.diff(rates) < 0)
+
+
+def test_relaxation_time_diverges_at_the_threshold():
+    near = basins.relaxation_time(basins.CRITICAL_FORCING * 0.999)
+    rest = basins.relaxation_time(0.0)
+    assert near > 30 * rest
+    assert not np.isfinite(basins.relaxation_time(basins.CRITICAL_FORCING))
+
+
+def test_the_state_barely_moves_before_it_jumps():
+    """Commitment is invisible: the equilibrium drifts to -1/sqrt(3),
+    21% of the full transition, and then jumps the rest."""
+    drift = abs(basins.equilibria(basins.CRITICAL_FORCING * 0.9999)[0]
+                - basins.COLD_STATE)
+    assert 0.40 < drift < 0.45          # of a 2.0-unit transition
+    assert abs(drift / 2.0 - 0.21) < 0.02
+
+
+def test_commitment_lag_grows_with_relaxation_time():
+    """One crossing, three rate constants, three very different
+    times until anything is visible."""
+    dt = 0.1
+    steps = int(6000 / dt)
+    axis = np.arange(steps) * dt
+    ramp = basins.CRITICAL_FORCING * (0.80 + 0.20 * axis / 500.0)
+
+    lags = []
+    for relaxation in (2.0, 30.0, 1000.0):
+        traj = basins.simulate([basins.COLD_STATE], ramp[:, None], None, dt,
+                               rates=1.0 / relaxation)
+        lags.append(basins.commitment_lag(traj, ramp[:, None], dt)[0])
+
+    assert all(np.isfinite(lags))
+    assert lags[0] < lags[1] < lags[2]
+    assert lags[2] > 1000            # ice-sheet-like: millennia
+
+
+def test_early_warning_indicators_rise_toward_the_threshold():
+    """Variance and lag-1 autocorrelation both increase, and the
+    autocorrelation matches exp(-lambda).
+
+    Measured at fixed forcing. An earlier version detrended a ramped
+    run with a filter as wide as the measurement window and got
+    indicators that fell — this test exists so that cannot recur
+    silently.
+    """
+    dt, rate, steps = 0.05, 1 / 30.0, 120000
+    rng = np.random.default_rng(5)
+
+    variances, autocorrs = [], []
+    for level in (0.5, 0.9, 0.995):
+        c = basins.CRITICAL_FORCING * level
+        forcing = c + 0.010 * rng.standard_normal(steps)
+        traj = basins.simulate([basins.equilibria(c)[0]], forcing[:, None],
+                               None, dt, rates=rate)[:, 0]
+        annual = traj[steps // 4:][::int(1.0 / dt)]
+        annual = annual - annual.mean()
+        variances.append(annual.var())
+        measured = float(annual[:-1] @ annual[1:] / (annual @ annual))
+        autocorrs.append(measured)
+        predicted = np.exp(-basins.recovery_rate(c, rate=rate))
+        assert abs(measured - predicted) < 0.01, (level, measured, predicted)
+
+    assert variances[0] < variances[1] < variances[2]
+    assert autocorrs[0] < autocorrs[1] < autocorrs[2]
+    assert variances[2] > 5 * variances[0]
+
+
+def test_reversibility_window_shrinks_as_overshoot_grows():
+    """Escape near a saddle-node slows as the overshoot shrinks, so a
+    small overshoot leaves a long window."""
+    dt = 0.005
+    safe = basins.CRITICAL_FORCING * 0.80
+    start = basins.equilibria(safe)[0]
+
+    def window(overshoot):
+        for delay in np.linspace(0.0, 40.0, 40):
+            n = int((delay + 60.0) / dt)
+            f = np.full(n, basins.CRITICAL_FORCING * overshoot)
+            f[int(delay / dt):] = safe
+            traj = basins.simulate([start], f[:, None], None, dt, rates=1.0)
+            if traj[-1, 0] > 0:
+                return delay
+        return np.inf
+
+    assert window(1.02) > window(1.20) > window(1.80)
+
+
+def test_restoring_forcing_too_late_does_not_help():
+    """Past the window, returning to the original forcing leaves the
+    system in the new state."""
+    dt = 0.005
+    safe = basins.CRITICAL_FORCING * 0.80
+    n = int(80.0 / dt)
+    f = np.full(n, basins.CRITICAL_FORCING * 1.20)
+    f[int(20.0 / dt):] = safe
+    traj = basins.simulate([basins.equilibria(safe)[0]], f[:, None], None,
+                           dt, rates=1.0)
+    assert traj[-1, 0] > 0
+
+
 if __name__ == '__main__':
     tests = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith('test_') and callable(fn)]

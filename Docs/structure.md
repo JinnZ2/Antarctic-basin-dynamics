@@ -650,6 +650,71 @@ from the available sources.
 
 ⸻
 
+## 4c. Committed against collapsed
+
+`Model/basins.py` gained `recovery_rate()`,
+`relaxation_time()`, `commitment_lag()` and rolling
+early-warning statistics; `Sims/commitment.py` runs them.
+
+The prompt was the ordinary claim that ice sheets are "near
+collapse". It contains two statements with opposite
+implications, and the model separates them by rate constant
+alone.
+
+**Sea ice and ice sheets are different objects.** Sea ice is
+frozen ocean that can visibly reorganise in a season, and did
+in 2016. An ice sheet is kilometres of land ice responding
+three orders of magnitude slower. Discussion moves between
+them freely; the model cannot.
+
+One forcing ramp, one crossing, three rate constants:
+
+| Basin | Relaxation | Visible after | Completed at 100 yr |
+|---|---|---|---|
+| Sea ice | 2 yr | 57 yr | 100% |
+| Ice shelf | 30 yr | 330 yr | 19% |
+| Ice sheet | 1000 yr | 2,891 yr | 7% |
+
+**Commitment is invisible by construction.** The stable state
+drifts from −1 to −0.577 as forcing approaches the threshold
+— 21% of the full transition — then stops until it jumps.
+That drift reads as an ordinary trend.
+
+What carries the information is the recovery rate, which
+reaches **exactly zero** at the saddle-node. At 99.9% of
+threshold a basin takes 38× longer to recover from a
+perturbation than an undisturbed one, while its mean state
+has barely moved since 90%. Measured at fixed forcing,
+variance rises about tenfold between 40% and 99.5% and lag-1
+autocorrelation goes 0.953 → 0.995, matching analytic
+exp(−λ) to three decimals.
+
+**The reversibility window** is one number in relaxation
+times and three in years, set by how far past the threshold
+the forcing went: 33 relaxation times at 1% overshoot, 7.6 at
+10%, 1.3 at 80%. At 10% that is 15 years for sea ice, 229 for
+a shelf, **7,640 for an ice sheet**.
+
+The slow basin looks generous, and that is the trap. Through
+those millennia the state has barely moved, so nothing in the
+observational record says the window is open or closing. By
+the time the transition is visible the window shut long ago,
+and recovery then requires driving forcing past zero rather
+than merely undoing the overshoot.
+
+**Two methodological errors, both caught and both recorded.**
+The first early-warning implementation detrended a ramped run
+with a filter as wide as its measurement window and produced
+indicators that *fell* toward the threshold. The first
+reversibility sweep let the ramp keep rising during the delay,
+confounding geometry with ramp rate; the second held overshoot
+fixed but stopped sweeping before the window closed and
+reported the sweep bound as the answer. The last two are the
+same error twice: reporting the edge of the experiment as a
+property of the system.
+
+⸻
+
 ## 5. Still not represented
 
 - Behavioural adaptation and range shift. The spatial

@@ -242,6 +242,95 @@ def effective_forcing(trajectories, forcing, D):
     return forcing + ((traj + 1.0) / 2.0) @ D.T
 
 
+def recovery_rate(c, state=COLD_STATE, rate=1.0):
+    """How fast a basin returns after a small perturbation.
+
+    The linearisation |f'(x*)| = |1 - 3 x*^2| at the stable
+    equilibrium, times the basin's own rate constant.
+
+    It is 2 at zero forcing and falls to exactly **zero** at the
+    saddle-node, where the equilibrium and the saddle merge.
+    That is critical slowing down, and it is analytic here
+    rather than fitted: a basin approaching its threshold takes
+    longer and longer to recover from anything, without its
+    state having visibly moved.
+
+    Returns 0.0 outside the bistable window, where the well
+    being asked about no longer exists.
+    """
+    roots = equilibria(c)
+    if len(roots) < 3:
+        return 0.0
+    well = roots[0] if state < 0 else roots[-1]
+    return float(rate * abs(1.0 - 3.0 * well ** 2))
+
+
+def relaxation_time(c, state=COLD_STATE, rate=1.0):
+    """Reciprocal of the recovery rate. Diverges at the threshold."""
+    speed = recovery_rate(c, state, rate)
+    return np.inf if speed <= 0 else 1.0 / speed
+
+
+def commitment_lag(trajectories, forcing, dt=0.01, threshold=0.0):
+    """Time between forcing crossing critical and the state crossing.
+
+    The gap between committing to a transition and displaying
+    one. For a fast basin it is short. For a slow basin it can
+    be centuries, during which the state barely moves and
+    nothing looks wrong.
+
+    Returns np.inf if the state never crosses, and np.nan if the
+    forcing never does.
+    """
+    traj = np.atleast_2d(trajectories)
+    forcing = np.atleast_2d(np.asarray(forcing, dtype=float))
+
+    lags = []
+    for i in range(traj.shape[1]):
+        past = forcing[:, i] >= CRITICAL_FORCING
+        if not past.any():
+            lags.append(np.nan)
+            continue
+        committed = int(np.argmax(past))
+        crossed = tipping_steps(traj[:, [i]], threshold)[0]
+        lags.append(np.inf if crossed < 0 else (crossed - committed) * dt)
+
+    return np.array(lags)
+
+
+def rolling_variance(series, window):
+    """Variance in a trailing window. Rises as a basin destabilises."""
+    series = np.asarray(series, dtype=float)
+    window = int(window)
+    out = np.full(len(series), np.nan)
+    for k in range(window, len(series)):
+        out[k] = series[k - window:k].var()
+    return out
+
+
+def rolling_autocorrelation(series, window, lag=1):
+    """Lag-1 autocorrelation in a trailing window.
+
+    Approaches 1 as recovery slows. With variance, the standard
+    pair of early-warning indicators, and the only way to see a
+    commitment while it is being made rather than centuries
+    later when the state finally moves.
+    """
+    series = np.asarray(series, dtype=float)
+    window, lag = int(window), int(lag)
+    out = np.full(len(series), np.nan)
+
+    for k in range(window, len(series)):
+        chunk = series[k - window:k]
+        chunk = chunk - chunk.mean()
+        denominator = float(chunk @ chunk)
+        if denominator <= 0:
+            continue
+        out[k] = float(chunk[:-lag] @ chunk[lag:]) / denominator
+
+    return out
+
+
 def ring_coupling(n, strength):
     """Destabilising coupling between circumpolar neighbours.
 
