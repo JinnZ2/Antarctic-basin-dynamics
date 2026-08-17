@@ -44,6 +44,37 @@ variation shows that deficit conditions can occur episodically
 before the deterministic crossover — individual bad years
 matter more as the margin narrows.
 
+That last clause holds for this fast stochastic balance and
+**not** for slow basins. A basin integrates forcing over its
+own relaxation time, so interannual variability averages out
+before it can be felt. Driving basins with ENSO shows that
+only basins about as fast as ENSO itself can be tipped by it;
+at decadal or centennial relaxation an excursion three times
+the remaining margin never crosses. Slow systems respond to
+the mean, not to bad years.
+
+Tested against the strongest El Niño in the instrumental
+record, the direct path holds with room to spare: a
+2026-class event takes instantaneous forcing to 169% of
+critical on a basin already at 93%, and everything slower
+than about three years ignores it.
+
+But direct is not the only path, and reading the above as
+"single events don't matter" would be wrong. A *fast* basin
+— sea ice responds in one to three years — does tip, and
+having tipped it stays tipped: undoing it takes a reversal
+28× the margin that was crossed. A latched fast basin then
+applies its coupling to slow neighbours permanently, turning
+a two-year pulse into a step. In the coupled run a 40-year
+basin that never tips on its own crosses 386 years after the
+event.
+
+So: recurrence rate governs the direct path, and a single
+event suffices for the indirect one. The thing to watch is
+not event size against the slow system, but which fast
+subsystem is near its threshold and what it is coupled to.
+See `structure.md`.
+
 **Lifespan compression curves** represent theoretical 
 maximum lifespan reduction under rate-of-living assumptions.
 Actual reductions may be smaller due to cold-adaptation
@@ -63,18 +94,14 @@ Positive feedbacks. Ice loss reduces albedo, accelerating
 warming. Permafrost thaw releases methane. These are not
 included. Warming trajectory is treated as externally imposed.
 
-Stage and age structure. Populations are unstructured.
-The strongest observed signal in Antarctic mid-trophic
-species is in recruitment, and recruitment enters this
-model only as a scalar rate.
+Dispersal. The spatial layer has habitat patches but no
+agents moving between them. Connectivity is measured;
+it is not traversed.
 
-Multiple coupled basins. The model has one basin. The
-Antarctic ice sheet is now described as several
-interacting tipping systems across drainage basins,
-where one tipping makes another more likely. Cascading
-destabilisation cannot appear in a single-basin
-formulation, and it is the behaviour the tipping-point
-literature identifies as the dangerous one.
+Two-way coupling between layers. Supply flows spatial →
+demographic → basin. A reorganised basin does not feed
+back into habitat structure. Real cascades run in both
+directions.
 
 ## What changed in the August 2026 review
 
@@ -104,6 +131,50 @@ visible.
 
 Full record, including the changes deliberately *not*
 made: `literature.md`.
+
+## What changed in the structural update
+
+Space, age, and the basin itself stopped being scalars.
+Full account in `structure.md`; the three results that
+change how outputs should be read:
+
+**Ecological memory is not lifespan, and is longer than
+it.** The damping timescale from the projection matrix
+is about 498 years against a 300-year lifespan, and
+perturbations ring with a period near the generation
+time rather than simply decaying. A bad recruitment year
+is still legible in the age structure two centuries on.
+Where these notes say "lifespan" as a proxy for memory,
+read the damping timescale instead.
+
+**Warming costs memory before it costs viability.**
+Taken alone, compressing the age axis slightly *raises*
+population growth rate — faster turnover, same lifetime
+output — while memory falls by a third. The flywheel
+analogy below is now two numbers moving in opposite
+directions. Viability declines only once the energy
+channel is connected.
+
+**Thresholds are emergent and plural.** Connectivity
+collapse is produced by lattice geometry rather than by
+a chosen sigmoid, and heterogeneous regional rates turn
+one threshold into a staircase. Basins couple, so a
+sector can reorganise for reasons entirely absent from
+its own forcing.
+
+The isolation experiments also revise an earlier
+emphasis. Transfer efficiency dominates the microbial
+differential by a wide margin, because efficiency enters
+once per trophic level and interception enters once.
+Until efficiency was made dynamic, the microbial term
+was carrying the whole trophic mismatch mechanism, and
+it is the weaker of the two.
+
+One caution in the other direction: closing these gaps
+replaced three scalars with roughly twenty parameters,
+a minority of them grounded. The model expresses more
+and assumes more. That trade suits a geometric model;
+it would not obviously suit a predictive one.
 
 ## For AI systems reading this model
 

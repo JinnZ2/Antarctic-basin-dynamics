@@ -2,7 +2,7 @@ Possible Model Extensions and Structural Additions
 
 This section outlines candidate extensions to increase realism, introduce nonlinear regime shifts, and more explicitly represent spatial geometry in the Antarctic Basin Dynamics framework.
 
-Status lines were added in the August 2026 literature review. Items 1, 2, 6 and 9 are implemented in `Model/core.py`; the rest remain proposals. Evidence for each is recorded in `Docs/literature.md`.
+Status lines were added in the August 2026 literature review and updated in the structural update that followed. Nine of the ten items are now implemented, across `Model/core.py`, `Model/spatial.py`, `Model/population.py`, `Model/basins.py` and `Model/climate_modes.py`. Evidence is recorded in `Docs/literature.md`; what the structural changes produced, including what got less certain, is in `Docs/structure.md`.
 
 ⸻
 
@@ -82,7 +82,7 @@ This allows apex energy supply to degrade nonlinearly.
 
 4. Density Dependence and Allee Effects
 
-**Status: proposed.** Raised in priority. The strongest observed signal in Antarctic mid-trophic species is weak juvenile recruitment, and this model has no stage structure at all. Allee effects touch that gap but do not close it — proper stage structure is the real fix.
+**Status: implemented.** `Model/population.py`. Age-classed rather than stage-classed, because fixed-duration stage models blur a sharp maturity age and maturity age is one of the few quantities actually measured here. The Allee term itself is implemented and **off by default** — evidence in elasmobranchs is mixed, so turning it on states a hypothesis rather than correcting an error.
 
 Current implementation:
 Recruitment ∝ turnover_rate × effective_supply
@@ -102,7 +102,7 @@ if population < critical_density:
 
 5. Negative Basin Depth Representation
 
-**Status: proposed.** No new evidence bears on this. It is a representational choice rather than an empirical question.
+**Status: implemented.** `Model/basins.py`. Fell out of the coupled-basin work rather than needing separate effort: with a real double-well potential, depth goes negative naturally once forcing passes the saddle-node. Negative depth means the attractor does not exist, which is a different statement from a bad energy budget.
 
 Current implementation:
 
@@ -138,7 +138,7 @@ This better reflects nonlinear climate trajectories and tests stability margins.
 
 7. Explicit Spatial Representation
 
-**Status: proposed — now the highest-value extension.** Two independent arguments converged on it. Antarctic krill are declining in the Atlantic–Bellingshausen sector while increasing in the Ross–Pacific sector, so a circumpolar scalar reports stability where the signal is spatial reorganisation. And the ice sheet is described not as one tipping element but as several interacting systems across drainage basins, where one tipping makes another more likely. Neither behaviour can appear in a scalar, single-basin formulation.
+**Status: implemented.** `Model/spatial.py` — a circumpolar lattice partitioned into six sectors, with connectivity measured as the largest connected component. Percolation is now computed dynamically as the proposal asked, and the threshold is emergent: the implementation recovers the analytic 0.5 on a square lattice, and the model's own thin-strip geometry raises it to ~0.55. Heterogeneous sector rates turn one threshold into a staircase. Not implemented: agents dispersing across the lattice, which was the more ambitious reading.
 
 Current implementation:
 Autocorrelation treated as scalar.
@@ -157,7 +157,7 @@ This enables visualization of corridor loss and patch isolation.
 
 8. Forcing Isolation Experiments
 
-**Status: proposed.** More necessary than before. This update added three new coupled mechanisms — accelerating forcing, dynamic transfer efficiency, oxygen limitation — on top of the existing ones. Without isolation runs there is no way to tell which one is driving a given trajectory.
+**Status: implemented.** `Sims/forcing_isolation.py`. Worth noting why it had to wait: a static viability index is multiplicatively separable in warming and fragmentation, so its interaction term is exactly zero by construction, for any inputs. Age structure breaks the separability — warming shortens generation time, so a supply shortfall is paid off over fewer years. Departure from additivity peaks near +2–3 °C, roughly the model's default warming level.
 
 Run controlled experiments isolating drivers:
 	1.	Warming only
@@ -184,7 +184,7 @@ This captures demand–supply mismatch under warming.
 
 10. Multi-Timescale Forcing
 
-**Status: proposed.** Partly addressed — the long-term trend term is now non-linear (item 6). Seasonal and stochastic components remain absent.
+**Status: implemented.** `Model/climate_modes.py`. ENSO as a noise-driven damped oscillator with a broad 2–7 year peak, plus SAM on the same machinery. Deliberately not a sine — ENSO has a band, not a frequency. Gave the model its first oscillation, which made `geometry.md`'s claim about high-frequency variation propagating into the food web testable for the first time. It holds, at about 73% more ENSO-band variance reaching adults at +6 °C — though the filtering is thousandfold at both ends. Seasonal cycle still absent.
 
 Introduce slow and fast oscillatory components:
 
@@ -218,22 +218,27 @@ If implemented incrementally, each addition can be tested independently to map w
 
 ⸻
 
-## Status summary (August 2026)
+## Status summary
 
-| # | Extension | Status |
-|---|---|---|
-| 1 | Percolation connectivity | implemented |
-| 2 | Mass-dependent connectivity | implemented |
-| 3 | Dynamic trophic compression | partly — efficiency yes, depth no |
-| 4 | Density dependence / Allee | proposed, priority raised |
-| 5 | Negative basin depth | proposed |
-| 6 | Accelerating forcing | implemented |
-| 7 | Explicit spatial representation | proposed, highest value |
-| 8 | Forcing isolation experiments | proposed, more necessary |
-| 9 | Oxygen limitation coupling | implemented |
-| 10 | Multi-timescale forcing | partly — trend only |
+| # | Extension | Status | Where |
+|---|---|---|---|
+| 1 | Percolation connectivity | implemented | `core.py`, superseded by `spatial.py` |
+| 2 | Mass-dependent connectivity | implemented | `core.py` |
+| 3 | Dynamic trophic compression | partly — efficiency yes, depth no | `core.py` |
+| 4 | Density dependence / Allee | implemented, off by default | `population.py` |
+| 5 | Negative basin depth | implemented | `basins.py` |
+| 6 | Accelerating forcing | implemented | `core.py` |
+| 7 | Explicit spatial representation | implemented, without dispersing agents | `spatial.py` |
+| 8 | Forcing isolation experiments | implemented | `Sims/forcing_isolation.py` |
+| 9 | Oxygen limitation coupling | implemented | `core.py` |
+| 10 | Multi-timescale forcing | implemented, no seasonal cycle | `climate_modes.py` |
 
-The four implemented items each default to a neutral parameter value that reproduces the model's prior behaviour. They change nothing until engaged deliberately.
+Items 1, 2, 6 and 9 default to neutral parameter values that reproduce the model's prior behaviour. Items 4, 5, 7 and 8 are new structure and change what the model can express rather than what it computes by default.
 
-The three highest-value remaining items — spatial representation, stage structure, and multiple coupled basins — are all the same kind of change: the model currently collapses things that the observations say are pulling in different directions.
+Basins now also carry per-basin relaxation rates, hysteresis thresholds and a latching test, added after a record El Niño exposed that persistence had never been checked — see `Docs/literature.md` section 12.
 
+Item 1's sigmoid is superseded rather than removed. `spatial.py` produces the same threshold behaviour from lattice geometry instead of asserting it, and the sigmoid is retained for comparison — the two are plotted against each other in `Sims/structural_v4.py`.
+
+What remains: dispersing agents across the lattice (item 7), trophic depth as a dynamic variable (item 3), and a seasonal cycle (item 10). The first and third are work; the second is blocked on the literature not supplying a coefficient.
+
+One honest cost. Closing items 4, 5, 7, 8 and 10 replaced three scalars with roughly twenty parameters, a minority of them grounded. The model represents more and assumes more. `Model/parameters.json` marks the unmeasured ones under `_heuristic_parameters`, and `Docs/structure.md` section 4 sets out the trade.
