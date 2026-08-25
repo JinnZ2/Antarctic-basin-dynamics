@@ -715,6 +715,64 @@ property of the system.
 
 ⸻
 
+## 4d. Where the mean has actually taken over
+
+`Sims/emergence.py`, prompted by the 2025 State of the
+Climate report recording that 2025 was the warmest year on
+record **with no El Niño present**, and that 2015–2025 were
+the eleven warmest.
+
+That is a statement about the ratio of a trend to a mode of
+variability — the same ratio every basin result turned on.
+Sections 4b and 4c concluded that slow systems respond to the
+mean rather than to variability. That stands. What this adds
+is where the mean has actually taken over, and the answer
+depends on depth.
+
+| | Trend | ENSO 1σ | Emergence | Neutral year beats a 3.5σ event |
+|---|---|---|---|---|
+| Global surface | 0.020 °C/yr | 0.10 °C | 5 yr | 18 yr |
+| Antarctic 490 m | 0.0075 °C/yr | 0.33 °C | 44 yr | 156 yr |
+
+At the surface the trend passed one σ of ENSO within a
+decade, which is why ranking no longer tracks ENSO phase. At
+the depth this model is built around it has not, and on the
+model's own abyssal trend it will not for four decades.
+
+**So the two conclusions apply to different places.** The
+mean-dominated framing is already right for the surface. At
+490 m a single event still moves more water than a decade of
+trend — which is what made the latching result of 4b matter
+rather than being a curiosity.
+
+The surface trend/σ ratio is 0.20, where an eleven-year
+streak occurs about 3% of the time in simulation: strong
+evidence of a trend without being an expected outcome. Under
+no trend it did not occur once in 4,000 trials. At depth the
+ratio is 0.022, indistinguishable from no trend.
+
+**Sea level gives the commitment lag a measured rate.** 4c
+argued that committed is not realised and that the gap is
+invisible. Sea level is the one place the gap has an observed
+rate beside it: 3.6 mm/yr realised (1.6 thermal, 2.0 ice
+melt) against ~4 m committed for West Antarctic marine ice —
+**36 times** what three decades produced. Ice melt now
+exceeds thermal expansion, a change in which term dominates
+rather than in the total.
+
+**A parallel, recorded but not claimed.** Arctic multi-year
+ice older than four years fell from ~1.5 million km² in the
+1980s to 95,000 km² in September 2025 — a 94% loss, with more
+than half the winter pack now under a year old. That is the
+same structure as this model's central demographic result: an
+integrator losing its integration window and becoming more
+reactive to annual forcing. It is outside the model's domain
+and is not evidence for it. It is the same shape in a system
+where the memory term is directly measured rather than
+inferred from a projection matrix.
+
+⸻
+
 ## 5. Still not represented
 
 - Behavioural adaptation and range shift. The spatial
