@@ -87,6 +87,15 @@ oscillation and two more results:
   enough to move the slow system — none is — but which fast
   subsystem sits near its threshold, and what it is coupled
   to.
+- **The mean has taken over at the surface, not at depth.**
+  2025 was the warmest year on record with no El Niño, and
+  2015–2025 were the eleven warmest — ranking no longer tracks
+  ENSO phase. At the surface the trend passed one σ of ENSO
+  within a decade; at 490 m it takes 44 years, and a neutral
+  year needs 156 years of trend to beat a past 3.5σ event
+  against 18 at the surface. The mean-dominated framing is
+  already right for the surface and is not yet right for the
+  band this model is about.
 - **Committed is not collapsed, and commitment is invisible.**
   The same crossing becomes visible after 57 years in sea ice,
   330 in an ice shelf and 2,891 in an ice sheet. Before it, the
@@ -114,6 +123,7 @@ python Sims/enso_coupling.py       # ENSO: depth, dipole, filtering, tipping
 python Sims/extreme_enso.py        # the 2026-27 record event against each layer
 python Sims/regime_shift.py        # persistence, preconditioning, timescale cascade
 python Sims/commitment.py          # committed vs collapsed, early warning
+python Sims/emergence.py           # trend vs variability, by depth
 python Sims/forcing_isolation.py   # isolated drivers, interaction surface
 python Sims/lit_update_2026.py     # prior vs revised parameterisation
 python tests/test_structure.py     # checks (also runs under pytest)

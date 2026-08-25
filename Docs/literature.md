@@ -1058,6 +1058,110 @@ construction in exactly the systems where it lasts longest.
 
 ⸻
 
+## 14. State of the Climate 2025 — what it touches
+
+**Source.** 36th annual State of the Climate report, BAMS,
+covering calendar year 2025; 625 scientists, 60 countries.
+(The 36th annual edition covering 2025 is the August 2026
+release — the August 2025 release was the 35th, covering
+2024.)
+
+**Findings that bear on this model.**
+
+*A neutral year at the top of the record.* 2025 ranked among
+the three warmest years with **no El Niño present** —
+near-neutral to La Niña-like conditions in the eastern
+Pacific — and 2015–2025 were the eleven warmest years on
+record. Europe had its warmest year.
+
+*Antarctica.* Warmest year since records began in 1979.
+Surface melt above average on most ice shelves, with
+Peninsula melt approaching record levels in early January.
+Sea ice below average for a nearly decade-long stretch;
+annual daily maximum and minimum extents the 3rd and 4th
+lowest on record.
+
+*Ocean.* Ocean heat content, surface to 2000 m, at a record
+high. Sea surface temperatures 3rd highest in a 172-year
+record despite cool ENSO conditions. 87% of the ocean
+surface saw at least one marine heatwave. Global mean sea
+level at a record for the 14th consecutive year — 111.2 mm
+above the 1993 baseline, thermal expansion contributing
+1.6 mm/yr and ice melt 2.0 mm/yr.
+
+*Cryosphere elsewhere.* Reference glaciers lost mass for the
+38th consecutive year, with ~41% of all loss since 1976
+occurring in the last decade. Arctic multi-year ice older
+than four years fell from ~1.5 million km² in the 1980s to
+**95,000 km² in September 2025**.
+
+**Implication — and a qualification of §10 to §13.**
+
+The neutral-year result is a statement about the ratio
+between a trend and a mode of variability, which is exactly
+the ratio the basin results turned on. Sections 10–12
+concluded that slow systems respond to the mean rather than
+to variability. That still holds. What this adds is *where*
+the mean has actually taken over, and the answer differs by
+depth.
+
+At the global surface the trend passed one σ of ENSO within
+about a decade, which is why ranking no longer tracks ENSO
+phase. At the model's reference depth — 490 m, where ENSO
+delivers about 0.33 °C per σ against an abyssal trend of
+0.0075 °C/yr — the same crossing takes **44 years**, and
+overtaking a past 3.5σ event with a neutral year takes
+**156 years** against 18 at the surface.
+
+So the deep band this model is built around is still
+variability-dominated while the surface is not. The
+mean-dominated framing is already right for the surface. At
+depth a single event still moves more water than a decade
+of trend, which is precisely what made the latching result
+of §12 matter rather than being a curiosity.
+
+*Sea level as the commitment lag, observed.* §13 argued that
+committed is not realised and that the gap is invisible.
+Sea level is the one place that gap has a measured rate
+beside it: 3.6 mm/yr realised, against ~4 m committed for
+West Antarctic marine ice. The committed quantity is
+**36 times** what three decades produced. Ice melt now
+exceeds thermal expansion, which is a change in which term
+dominates rather than in the total.
+
+*Arctic multi-year ice as the same structure elsewhere.*
+The model's central demographic result is that warming
+compresses ecological memory — an integrator losing its
+integration window and becoming more reactive to annual
+forcing. Multi-year ice is the cryospheric version of the
+same object, and it has lost **94%** of its >4-year
+component since the 1980s, with more than half the winter
+pack now less than a year old.
+
+This is outside the model's domain and is not evidence for
+it. It is the same structure in a system where the memory
+term is directly measurable rather than inferred from a
+projection matrix, and it is worth recording for that
+reason.
+
+**Change.**
+Added the reported values to `parameters.json` under an
+`_observed_2025` marker, and `Sims/emergence.py`. No
+mechanism changed: these are observations against which the
+model's existing forcing decomposition is checked, not new
+parameters for it.
+
+**Not used.** Tropical cyclone counts and intensities, the
+Hurricane Melissa and Cyclone Zelia case studies, and
+tundra greening. All are outside a Southern Ocean
+deep-water model, and folding them in would be borrowing
+authority rather than adding information. Greenhouse gas
+concentrations are recorded for context only — the model
+treats the warming trajectory as externally imposed and
+does not compute it from forcing.
+
+⸻
+
 ⸻
 
 ## Summary of parameter changes

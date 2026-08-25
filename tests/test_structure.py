@@ -772,6 +772,85 @@ def test_restoring_forcing_too_late_does_not_help():
     assert traj[-1, 0] > 0
 
 
+# --- trend against variability ---------------------------------------
+
+
+def test_emergence_is_later_at_depth_than_at_the_surface():
+    """The qualification the 2025 State of the Climate report forces.
+
+    Ranking at the surface no longer depends on ENSO phase because
+    the trend passed one sigma of ENSO within about a decade. At the
+    model's reference depth, where ENSO delivers ~0.33 C per sigma
+    against a 0.0075 C/yr trend, it has not.
+    """
+    depth_sigma = float(cm.subsurface_anomaly_C(1.0))
+    depth_trend = 0.0075
+    surface_sigma, surface_trend = 0.10, 0.020
+
+    surface_emergence = surface_sigma / surface_trend
+    depth_emergence = depth_sigma / depth_trend
+
+    assert surface_emergence < 10
+    assert depth_emergence > 40
+    assert depth_emergence > 4 * surface_emergence
+
+
+def test_one_sigma_at_depth_comes_from_the_composite_scaling():
+    """0.5 C at a 1.5-sigma composite implies 1/3 C per sigma."""
+    assert abs(cm.subsurface_anomaly_C(1.0)
+               - cm.ENSO_SUBSURFACE_AMPLITUDE_C
+               / cm.COMPOSITE_EVENT_SIGMA) < 1e-12
+    assert 0.30 < cm.subsurface_anomaly_C(1.0) < 0.36
+
+
+def test_a_warming_streak_is_essentially_impossible_without_trend():
+    """"The last eleven years were the eleven warmest" is a strong
+    statement about trend against noise."""
+    rng = np.random.default_rng(3)
+    length, streak, trials = 176, 11, 2000
+
+    def probability(ratio):
+        series = (ratio * np.arange(length)[None, :]
+                  + rng.standard_normal((trials, length)))
+        order = np.argsort(np.argsort(series, axis=1), axis=1)
+        return float(np.mean((order >= length - streak)[:, -streak:]
+                             .all(axis=1)))
+
+    assert probability(0.0) == 0.0
+    assert probability(0.5) > probability(0.2) > probability(0.0)
+
+
+def test_committed_sea_level_dwarfs_what_has_been_realised():
+    """Section 13's commitment lag, in an observable with a rate."""
+    import json
+    with open(ROOT / 'Model' / 'parameters.json') as handle:
+        params = json.load(handle)
+
+    realised_m = params['sea_level_mm_above_1993'] / 1000.0
+    committed_m = params['committed_west_antarctic_sea_level_m']
+    rate = (params['sea_level_thermal_mm_per_year']
+            + params['sea_level_ice_mm_per_year'])
+
+    assert committed_m / realised_m > 30
+    assert rate == 3.6
+    assert params['sea_level_ice_mm_per_year'] > \
+        params['sea_level_thermal_mm_per_year']
+    assert committed_m * 1000 / rate > 1000        # centuries at this rate
+
+
+def test_arctic_multiyear_ice_loss_is_a_memory_loss():
+    """Recorded as the same structure in another system: an
+    integrator stripped of its integration window. Outside the
+    model's domain and not evidence for it."""
+    import json
+    with open(ROOT / 'Model' / 'parameters.json') as handle:
+        params = json.load(handle)
+
+    before = params['arctic_multiyear_ice_km2_1980s']
+    after = params['arctic_multiyear_ice_km2_2025']
+    assert 1 - after / before > 0.9
+
+
 if __name__ == '__main__':
     tests = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith('test_') and callable(fn)]
