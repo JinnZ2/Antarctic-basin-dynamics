@@ -773,6 +773,54 @@ inferred from a projection matrix.
 
 ⸻
 
+## 4e. The record arrives with the El Niño
+
+`Sims/august_2026.py`, prompted by August 2026 — the warmest
+August in ERA5, NOAA and NASA, ERA5's joint warmest month ever
+at 1.65 °C above 1850-1900 — with a strong El Niño underneath
+it (weekly Niño 3.4 +2.7 °C, >90% odds of a very strong
+event).
+
+4d placed the surface at trend/σ = 0.20 on the strength of a
+neutral year in the top three: the baseline with the mode
+*off*. This is the same baseline with the mode *on*, and it is
+what makes the modulation measurable.
+
+| | Value |
+|---|---|
+| Monthly excess over the 12-month mean | 0.17 °C at 3.48σ → **0.049 °C/σ** (a floor; lagged, still rising) |
+| Round number used in 4d | 0.10 °C/σ — 2.0× the floor |
+| Two-year swing of the 12-month mean | 1.64 → 1.48 °C against +0.04 of trend → ~0.20 °C ≈ 2σ |
+| P(neutral final year in top 3), trend/σ = 0.20 | 0.72 (no trend: < 0.001) |
+| P(≥3σ El Niño final year is the record) | 1.00 (no trend: 0.86) |
+
+The round numbers hold at the factor-of-two level and are not
+refined — one event is not a fit. The ordering result is the
+one that matters: an El Niño record carries almost no
+information about the trend, while a neutral year in the top
+three carries nearly all of it. "Neutral 2025, then an El Niño
+record" is the single ordering the superposition produces at
+this ratio, so the August record confirms 4d rather than
+qualifying it.
+
+**The event itself moved from forecast to observation.**
+3.48σ in August against the 4.65σ forecast peak — 1.16 °C at
+490 m now, 58% of the default warming step, against 1.55 °C at
+the peak (linear, upper bound). Antarctic sea ice enters it at
+the 3rd-lowest August on record, inside the post-2016 latched
+state of 4b. The trigger has arrived on a state that was
+already the tipped one; whether a step exists below it is not
+a question a one-threshold basin can answer.
+
+**Two ways records are stated that hide the size.** The
+absolute tie with July 2023 conceals a 0.13 °C larger anomaly,
+because July's climatology is 0.12 °C warmer than August's.
+And the margin over the previous August record is 0.14 °C in
+ERA5 but 0.08 °C in NOAA: dataset-dependent at the 0.05 °C
+level, while the rank is not.
+
+⸻
+
 ## 5. Still not represented
 
 - Behavioural adaptation and range shift. The spatial

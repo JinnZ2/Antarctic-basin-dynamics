@@ -32,7 +32,8 @@ support.
 ## Where the model stands
 
 Reviewed against the literature in **August 2026**;
-structural layers added immediately after. Every
+structural layers added immediately after, and the August
+2026 monthly observations checked against them in September. Every
 parameter's source, and every change deliberately
 *not* made, is in `Docs/literature.md`.
 
@@ -103,6 +104,21 @@ oscillation and two more results:
   while the recovery rate falls to zero, variance rises tenfold
   and autocorrelation goes 0.953 → 0.995. Those statistics are
   the only signal available during the gap.
+- **The record arrived with the El Niño, and it confirmed the
+  neutral year rather than reversing it.** August 2026 was the
+  warmest August in every record and ERA5's joint warmest month,
+  1.65 °C above 1850-1900 with Niño 3.4 at +2.7 °C. The monthly
+  excess over the 12-month mean puts a floor of **0.049 °C per σ**
+  under the surface ENSO coefficient; the round 0.10 °C/σ in `Sims/emergence.py` is
+  twice that, and the two-year swing of the 12-month mean (1.64 →
+  1.48 °C) is two of its σ. At trend/σ = 0.20 a neutral year is
+  top-three with P = 0.72 and a ≥3σ El Niño year is the record with
+  P = 1.00 — but under **no** trend the El Niño year is still the
+  record 86% of the time. The El Niño record carries almost no
+  trend information; the neutral top-three carries nearly all of
+  it. The event itself is now an observation in progress, 3.48σ
+  and rising, arriving on Antarctic sea ice that sits at its
+  3rd-lowest August inside the post-2016 latched state.
 - **The archive is legible only in arrears.** A record El
   Niño's recruitment failure shows up as a ~1.3% adult
   deficit peaking **153 years later**, because the destroyed
@@ -124,6 +140,7 @@ python Sims/extreme_enso.py        # the 2026-27 record event against each layer
 python Sims/regime_shift.py        # persistence, preconditioning, timescale cascade
 python Sims/commitment.py          # committed vs collapsed, early warning
 python Sims/emergence.py           # trend vs variability, by depth
+python Sims/august_2026.py         # the August 2026 record against §14; the event as observed
 python Sims/forcing_isolation.py   # isolated drivers, interaction surface
 python Sims/lit_update_2026.py     # prior vs revised parameterisation
 python tests/test_structure.py     # checks (also runs under pytest)

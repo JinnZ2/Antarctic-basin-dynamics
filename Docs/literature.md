@@ -1162,6 +1162,124 @@ does not compute it from forcing.
 
 ⸻
 
+## 15. August 2026 — the record arrives with the El Niño
+
+**Source.** Copernicus Climate Change Service monthly bulletin
+(ERA5), NOAA NCEI global climate report, NSIDC sea-ice
+analysis, NOAA CPC ENSO diagnostic discussion — all published
+9-12 September 2026; WMO summary citing C3S, NOAA and NASA.
+Berkeley Earth's July 2026 update for the year-to-date odds.
+
+**Finding.**
+
+*The warmest August in every record, and the joint warmest
+month.* ERA5 puts August 2026 at 16.96 °C, **1.65 °C above
+1850-1900** and 0.85 °C above 1991-2020 — the warmest August
+in the reanalysis and, in absolute terms, tied with July 2023
+as the warmest month ever measured (difference under 0.01 °C).
+NOAA has it 1.32 °C above the 20th-century mean, the warmest
+August in 177 years, 0.08 °C over the 2023/2024 tie, with
+13.2% of the surface record-warm — the largest August extent
+on record. NASA ranks it the same. Every one of the ten
+warmest Augusts is from 2016 onward.
+
+*The El Niño under it.* Weekly Niño 3.4 reached **+2.7 °C**
+centred on 12 August 2026 (the relative index +2.45 °C at
+month end), with an El Niño Advisory in effect and a **>90%
+chance of a very strong event** through the northern winter
+2026-27. The forecast peak in §11 was 3.6 °C; the observed
+mid-August value is already within 0.05 °C of the 1877-78 and
+2015-16 peaks, before this event has peaked.
+
+*The ocean.* Extra-polar SST averaged 21.07 °C for the month
+(previous August record 20.98 °C, 2023), and the daily series
+set its all-time record of 21.10 °C on **22 August** — a month
+when the seasonal cycle sits well below its March-April
+maximum. The previous daily record, 21.09 °C, was set in
+March 2024 *at* that maximum.
+
+*The running mean.* The 12-month mean to August 2026 is
+**1.48 °C**, the first single month above 1.5 °C since
+November 2025. The 12-month mean to August 2024 was 1.64 °C.
+The mean fell 0.16 °C in two years while the trend added
+about 0.04 °C.
+
+*Sea ice.* Antarctic August extent 16.46 million km², **3rd
+lowest** on record. Arctic 5.56 million km², 7th lowest.
+
+**Implication — §14 has its second data point.**
+
+§14 placed the global surface at a trend/σ ratio of 0.20 on
+the strength of a neutral year ranking in the top three. That
+is one half of a superposition: baseline with the mode off.
+August 2026 is the other half — the same baseline with the
+mode fully on — and it is what lets the modulation be
+*measured* rather than described.
+
+The monthly excess over the 12-month mean is 0.17 °C at a
+Niño 3.4 of +2.7 °C (3.48σ): **0.049 °C per σ**, a floor,
+because the global response lags Niño 3.4 by about a season
+and the event is still strengthening. `Sims/emergence.py`
+used a round 0.10 °C per σ. The round number is twice the
+floor. The two-year swing of the 12-month mean — 0.16 °C down
+against 0.04 °C of trend up, so ~0.20 °C of ENSO — is two of
+that round σ. Both round numbers hold at the factor-of-two
+level. Neither is refined here; one event is not a fit.
+
+The more useful result is the ordering. At trend/σ = 0.20
+over a 176-year record, a neutral final year lands in the top
+three with probability 0.72 and a ≥3σ El Niño final year is
+*the* record with probability 1.00. Under no trend the neutral
+year reaches the top three essentially never (P < 0.001) —
+while the ≥3σ year is still the record 86% of the time. So an
+El Niño record carries almost no information about the trend,
+and the neutral ranking carries nearly all of it. "Neutral
+2025 in the top three, then an El Niño record in 2026" is not
+ENSO taking back control. It is the one ordering the
+superposition produces at this ratio, and §14 predicted it.
+
+*The event, for §11 and §12.* The 2026-27 event has moved
+from a forecast to an observation in progress: 3.48σ in
+August against a forecast peak of 4.65σ. Scaled linearly, that
+is 1.16 °C at 490 m *now* — 58% of the model's default warming
+step — against 1.55 °C at the forecast peak. The §12 caveats
+stand: linear scaling is an upper bound, and the fast basin is
+the one to watch. Antarctic sea ice enters this event **inside
+the post-2016 latched state** (3rd lowest August, after the
+record lows of 2023-25). The preconditioning-plus-trigger
+mechanism now has its trigger, and it lands on a state that
+was already the tipped one. Whether a further step exists
+below it is not a question this model can answer: it has one
+threshold per basin.
+
+*Two things worth recording about how records are stated.*
+The absolute tie with July 2023 understates the anomaly:
+July's 1991-2020 climatology is 0.12 °C warmer than August's,
+so August 2026's anomaly (0.85) beats July 2023's (0.72) by
+0.13 °C. And the record margin is dataset-dependent at the
+0.05 °C level — 0.14 °C in ERA5 against 0.08 °C in NOAA —
+while the rank is not. Compare anomalies across months, and
+name the dataset with any margin.
+
+**Change.**
+`nino34_aug_2026_observed_C` and an `_observed_aug_2026`
+block added to `parameters.json`; the observed rung added to
+`HISTORICAL_EVENTS` in `climate_modes.py`, with
+`NINO34_AUG_2026_OBSERVED_C`. Added `Sims/august_2026.py` and
+four tests. No mechanism changed. As in §14 these are
+observations checked against the model's existing
+decomposition, not parameters for it.
+
+**Not used.** Continental rankings, the western-European
+summer record, and the tropical-Pacific rainfall outlooks: all
+outside a Southern Ocean deep-water model. The 69% odds on
+2026 as the warmest year (Berkeley Earth, July) and the
+three-instance pattern that the second calendar year of a
+strong El Niño has been the record year (1998, 2016, 2024)
+are recorded in the sibling `earth-systems-physics` module
+`global_temperature_august_2026.py`, labelled there as a
+pattern rather than a projection, and are not used here.
+
 ⸻
 
 ## Summary of parameter changes
@@ -1225,7 +1343,8 @@ parameters, a minority of them grounded.
 
 ## Review cadence
 
-Reviewed August 2026.
+Reviewed August 2026. Monthly observations for August 2026
+(§15) added September 2026.
 
 The fastest-moving inputs are Antarctic sea ice state
 (§6), abyssal warming rates (§1), and Southern Ocean

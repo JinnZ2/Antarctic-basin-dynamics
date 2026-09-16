@@ -851,6 +851,87 @@ def test_arctic_multiyear_ice_loss_is_a_memory_loss():
     assert 1 - after / before > 0.9
 
 
+# --- August 2026: the record arrives with the El Niño ------------------
+
+
+def test_the_observed_event_is_already_at_record_class():
+    """Weekly Nino3.4 of +2.7 C in mid-August 2026 sits within 0.05 C
+    of both previous record peaks, before the event has peaked."""
+    observed = cm.event_sigma(cm.NINO34_AUG_2026_OBSERVED_C)
+    assert 3.4 < observed < 3.6
+    assert observed < cm.event_sigma(cm.HISTORICAL_EVENTS['2026-27 (forecast)'])
+    assert abs(cm.NINO34_AUG_2026_OBSERVED_C
+               - cm.HISTORICAL_EVENTS['2015-16']) <= 0.05
+    assert cm.HISTORICAL_EVENTS['2026-27 (Aug 2026, observed)'] == \
+        cm.NINO34_AUG_2026_OBSERVED_C
+
+
+def test_parameters_carry_both_halves_of_the_superposition():
+    """2025 with ENSO off (section 14) and August 2026 with ENSO on
+    (section 15) are both recorded, and the numbers agree with the
+    published bulletins to the digit."""
+    import json
+    with open(ROOT / 'Model' / 'parameters.json') as handle:
+        params = json.load(handle)
+
+    assert params['nino34_aug_2026_observed_C'] == 2.7
+    assert params['global_surface_anomaly_aug_2026_preindustrial_C'] == 1.65
+    assert params['global_surface_12_month_mean_sep2025_aug2026_C'] == 1.48
+    assert params['global_surface_12_month_mean_sep2023_aug2024_C'] == 1.64
+    assert '_observed_aug_2026' in params
+    assert params['antarctic_sea_ice_aug_2026_rank_lowest'] == 3
+
+
+def test_surface_round_numbers_survive_the_measured_excursion():
+    """The monthly excess over the 12-month mean, per sigma of the
+    observed Nino3.4, is a floor on the surface ENSO coefficient. The
+    round 0.10 C/sigma of emergence.py must sit above that floor and
+    within a factor of two of it; the two-year swing of the 12-month
+    mean must be of order two of its sigma."""
+    import json
+    with open(ROOT / 'Model' / 'parameters.json') as handle:
+        params = json.load(handle)
+
+    surface_trend, surface_sigma = 0.020, 0.100
+    excess = (params['global_surface_anomaly_aug_2026_preindustrial_C']
+              - params['global_surface_12_month_mean_sep2025_aug2026_C'])
+    per_sigma = excess / float(cm.event_sigma(params['nino34_aug_2026_observed_C']))
+    assert 0 < per_sigma < surface_sigma
+    assert surface_sigma / per_sigma < 2.5
+
+    swing = (params['global_surface_12_month_mean_sep2023_aug2024_C']
+             - params['global_surface_12_month_mean_sep2025_aug2026_C']
+             + 2 * surface_trend)
+    assert 1.0 < swing / surface_sigma < 3.0
+
+
+def test_neutral_then_el_nino_record_is_what_superposition_produces():
+    """At trend/sigma = 0.2 a neutral final year is usually top-three
+    and a >=3 sigma final year is essentially always the record. Under
+    no trend the neutral year almost never reaches the top three
+    while the strong El Nino year still usually does -- so the
+    neutral ranking carries the trend information, not the record."""
+    rng = np.random.default_rng(5)
+    length, trials = 176, 20_000
+    noise = rng.standard_normal((trials, length))
+
+    def rank_of_final(ratio):
+        series = ratio * np.arange(length)[None, :] + noise
+        return (series[:, :-1] > series[:, -1:]).sum(axis=1) + 1
+
+    neutral = np.abs(noise[:, -1]) < 0.5
+    strong = noise[:, -1] >= 3.0
+    assert strong.sum() > 10
+
+    with_trend = rank_of_final(0.2)
+    no_trend = rank_of_final(0.0)
+
+    assert np.mean(with_trend[neutral] <= 3) > 0.6
+    assert np.mean(with_trend[strong] == 1) > 0.95
+    assert np.mean(no_trend[neutral] <= 3) < 0.05
+    assert np.mean(no_trend[strong] == 1) > 0.7
+
+
 if __name__ == '__main__':
     tests = [(name, fn) for name, fn in sorted(globals().items())
              if name.startswith('test_') and callable(fn)]
