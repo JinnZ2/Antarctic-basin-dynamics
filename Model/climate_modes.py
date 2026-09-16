@@ -67,7 +67,16 @@ HISTORICAL_EVENTS = {
     '2015-16': 2.75,
     '2026-27 (forecast)': 3.6,
     '2026-27 (plume low)': 2.8,
+    '2026-27 (Aug 2026, observed)': 2.7,
 }
+
+# The 2026-27 event as observed in progress: the weekly Nino3.4
+# anomaly centred on 12 August 2026 was +2.7 C (NOAA CPC), with an El
+# Nino Advisory in effect and a >90% chance of a very strong event
+# through the northern winter. A weekly value, not the seasonal ONI,
+# and taken before the peak -- so it is a floor on the event, not its
+# size. It is already within 0.05 C of the two previous record peaks.
+NINO34_AUG_2026_OBSERVED_C = 2.7
 
 # Quadratic rectification strength. ENSO is positively skewed with a
 # one-sided fat tail produced by extreme El Nino events, attributed
