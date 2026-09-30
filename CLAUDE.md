@@ -1,6 +1,8 @@
 # Antarctic-basin-dynamics
 
-A geometric model of energy basin stability under compound forcing in Antarctic marine systems. Structural, not predictive.
+> A geometric model of energy basin stability under compound forcing in Antarctic marine systems.
+
+Source: README.md
 
 <!-- clone-refspec-note v1.1 -->
 ## Cloning and pushing
