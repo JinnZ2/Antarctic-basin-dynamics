@@ -1,9 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from core import metabolic_multiplier, adjusted_lifespan
 import json
+import sys
+from pathlib import Path
 
-with open('../parameters.json') as f:
+# Note 2026-11-20: this read '../parameters.json', a path with no file behind it; the
+# file is Model/parameters.json. The path is now taken from this file's location, as in
+# Sims/emergence.py, and Model/ is put on sys.path so `core` imports from any directory.
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / 'Model'))
+
+from core import metabolic_multiplier, adjusted_lifespan
+
+with open(ROOT / 'Model' / 'parameters.json') as f:
     P = json.load(f)
 
 warming_range = np.linspace(0, 6, 100)

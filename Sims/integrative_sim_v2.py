@@ -1,6 +1,8 @@
-**note the header: that v2 introduces percolation connectivity, accelerating forcing, and mass-dependent connectivity scaling.**
+# **note the header: that v2 introduces percolation connectivity, accelerating forcing, and mass-dependent connectivity scaling.**
+# Note 2026-11-20: the line above was bare text and the numpy import was indented by one
+# space, so this file did not compile. The text is kept as a comment.
 
- import numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
 
 # Higher resolution time axis
